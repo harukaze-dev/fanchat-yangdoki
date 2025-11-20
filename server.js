@@ -161,7 +161,7 @@ io.on('connection', (socket) => {
     const { roomId, userData } = data;
 
     if (userData.role === 'streamer') {
-        const STREAMER_KEY = 'mhyam3';
+        const STREAMER_KEY = 'dancohankki';
         if (userData.streamerKey !== STREAMER_KEY) {
             return socket.emit('error message', '스트리머 인증 키가 올바르지 않습니다.');
         }
