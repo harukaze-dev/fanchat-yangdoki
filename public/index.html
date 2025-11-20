@@ -12,11 +12,9 @@
 <body>
     <div id="toast-popup" class="hidden">코드 복사 완료!</div>
     <div id="main-menu">
-        <div class="lobby-header">
-            <h1>채팅에 참여하세요</h1>
-            <p>새로운 방을 만들거나 코드로 참여하세요.</p>
-        </div>
-        <button id="create-room-btn" class="main-menu-btn">새로운 방 만들기</button>
+        <!-- [수정] 로비 타이틀 이미지 위치를 헤더 위로 이동 -->
+        <img src="/images/title.png" alt="Title Image" class="lobby-title-image">
+        <button id="create-room-btn" class="main-menu-btn">새로운 팬채팅 만들기</button>
         <div class="divider">또는</div>
         <div id="join-form">
             <input id="room-code-input" type="password" placeholder="초대 코드를 입력하세요" autocomplete="off" maxlength="6">
@@ -57,7 +55,7 @@
     <div id="chat-container" class="hidden">
         <!-- '가짜팬 찾기' 모드용 멀티 채팅 뷰 -->
         <div id="multi-chat-view" class="layout-list">
-            <!-- [수정] 단츄 채널 -->
+            <!-- 단츄 채널 -->
             <div class="chat-column" id="chat-column-danchu" data-streamer-id="danchu">
                 <div class="chat-column-header streamer-danchu">
                     <div class="column-title"><img src="/images/streamer_danchu.png" alt="단츄"><span>단츄-단츄팬 채널</span></div>
@@ -85,7 +83,7 @@
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
-            <!-- [수정] 코렛트 채널 -->
+            <!-- 코렛트 채널 -->
             <div class="chat-column" id="chat-column-collet" data-streamer-id="collet">
                 <div class="chat-column-header streamer-collet">
                     <div class="column-title"><img src="/images/streamer_collet.png" alt="코렛트"><span>코렛트-코렛트팬 채널</span></div>
@@ -113,7 +111,7 @@
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
-            <!-- [수정] 한결 채널 -->
+            <!-- 한결 채널 -->
             <div class="chat-column" id="chat-column-hangyeol" data-streamer-id="hangyeol">
                 <div class="chat-column-header streamer-hangyeol">
                     <div class="column-title"><img src="/images/streamer_hangyeol.png" alt="한결"><span>한결-한결팬 채널</span></div>
@@ -141,7 +139,7 @@
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
-            <!-- [수정] 양도끼 채널 -->
+            <!-- 양도끼 채널 -->
             <div class="chat-column" id="chat-column-yangdoki" data-streamer-id="yangdoki">
                 <div class="chat-column-header streamer-yangdoki">
                     <div class="column-title"><img src="/images/streamer_yangdoki.png" alt="양도끼"><span>양도끼-양도끼팬 채널</span></div>

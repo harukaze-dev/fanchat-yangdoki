@@ -13,7 +13,7 @@ let allUsers = [];
 let currentGuesses = {};
 let currentRoundNumber = 1;
 let isGameOver = false;
-let currentLayout = 'list'; // [수정] 현재 레이아웃 상태 초기값을 'list'로 변경
+let currentLayout = 'list';
 
 // 사운드 및 TTS 관련
 let currentVolume = 1.0;
@@ -319,7 +319,23 @@ function showChatRoom() {
 }
 
 //--- 이벤트 리스너 설정 ---//
-createRoomBtn.addEventListener('click', () => { userIntent = 'create'; mainMenu.classList.add('hidden'); profileSetup.classList.remove('hidden'); profileSetupTitle.textContent = '새로운 방 프로필 설정'; updateProfileSetupUI(); });
+// [수정] '방 만들기' 클릭 시 '스트리머' 역할로 고정하는 로직 추가
+createRoomBtn.addEventListener('click', () => { 
+    userIntent = 'create'; 
+    mainMenu.classList.add('hidden'); 
+    profileSetup.classList.remove('hidden'); 
+    profileSetupTitle.textContent = '새로운 팬챗 프로필 설정'; 
+    
+    // 스트리머 역할로 강제 선택
+    document.getElementById('role-streamer').checked = true;
+    
+    // 팬 역할 라디오 버튼과 라벨을 숨김
+    document.getElementById('role-fan').style.display = 'none';
+    document.querySelector('label[for="role-fan"]').style.display = 'none';
+
+    updateProfileSetupUI(); 
+});
+
 joinRoomBtn.addEventListener('click', () => {
     const code = roomCodeInput.value.trim().toUpperCase(); if (!code) return alert('초대 코드를 입력해주세요.');
     userIntent = 'join'; roomToJoin = code; mainMenu.classList.add('hidden');
@@ -348,7 +364,20 @@ confirmProfileBtn.addEventListener('click', () => {
     if (userIntent === 'create') socket.emit('create room', { userData });
     else if (userIntent === 'join') socket.emit('join room', { roomId: roomToJoin, userData: userData });
 });
-backToLobbyBtn.addEventListener('click', () => { profileSetup.classList.add('hidden'); mainMenu.classList.remove('hidden'); });
+
+// [수정] 뒤로가기 시 프로필 설정 화면을 초기 상태로 리셋하는 로직 추가
+backToLobbyBtn.addEventListener('click', () => { 
+    profileSetup.classList.add('hidden'); 
+    mainMenu.classList.remove('hidden'); 
+
+    // 팬 역할 라디오 버튼과 라벨을 다시 보이게 함
+    document.getElementById('role-fan').style.display = '';
+    document.querySelector('label[for="role-fan"]').style.display = '';
+
+    // 기본 선택을 '팬'으로 되돌림
+    document.getElementById('role-fan').checked = true;
+});
+
 privateGuessModalClose.onclick = () => { privateGuessModal.classList.add('hidden'); privateGuessTargetUser = null; };
 channelParticipantsModalClose.onclick = () => channelParticipantsModal.classList.add('hidden');
 gameOverCloseBtn.onclick = () => gameOverModal.classList.add('hidden');
