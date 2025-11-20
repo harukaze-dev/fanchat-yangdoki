@@ -1,0 +1,72 @@
+{
+    "streamers": [
+        {
+            "id": "danchu",
+            "name": "단츄",
+            "pfp": "/images/streamer_danchu.png",
+            "fandom": {
+                "id": "danchufan",
+                "name": "단츄팬",
+                "pfp": "/images/fan_danchu.png",
+                "superFanPfp": "/images/fan_super_danchu.png",
+                "yasikPfp": "/images/fan_udong.png",
+                "tiers": [
+                    { "name": "단츄팬", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 단츄팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "유동팬", "isSuperFan": false, "isYasik": true }
+                ]
+            }
+        },
+        {
+            "id": "collet",
+            "name": "코렛트",
+            "pfp": "/images/streamer_collet.png",
+            "fandom": {
+                "id": "colletfan",
+                "name": "코렛트팬",
+                "pfp": "/images/fan_collet.png",
+                "superFanPfp": "/images/fan_super_collet.png",
+                "yasikPfp": "/images/fan_udong.png",
+                "tiers": [
+                    { "name": "코렛트팬", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 코렛트팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "유동팬", "isSuperFan": false, "isYasik": true }
+                ]
+            }
+        },
+        {
+            "id": "hangyeol",
+            "name": "한결",
+            "pfp": "/images/streamer_hangyeol.png",
+            "fandom": {
+                "id": "hangyeolfan",
+                "name": "한결팬",
+                "pfp": "/images/fan_hangyeol.png",
+                "superFanPfp": "/images/fan_super_hangyeol.png",
+                "yasikPfp": "/images/fan_udong.png",
+                "tiers": [
+                    { "name": "한결팬", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 한결팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "유동팬", "isSuperFan": false, "isYasik": true }
+                ]
+            }
+        },
+        {
+            "id": "yangdoki",
+            "name": "양도끼",
+            "pfp": "/images/streamer_yangdoki.png",
+            "fandom": {
+                "id": "yangdokifan",
+                "name": "양도끼팬",
+                "pfp": "/images/fan_yangdoki.png",
+                "superFanPfp": "/images/fan_super_yangdoki.png",
+                "yasikPfp": "/images/fan_udong.png",
+                "tiers": [
+                    { "name": "양도끼팬", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 양도끼팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "유동팬", "isSuperFan": false, "isYasik": true }
+                ]
+            }
+        }
+    ]
+}

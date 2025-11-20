@@ -1,0 +1,218 @@
+<!-- public\index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>오픈채팅</title>
+    <link rel="stylesheet" href="/common.css" />
+    <link id="mode-stylesheet" rel="stylesheet" href="/fake_fan.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="toast-popup" class="hidden">코드 복사 완료!</div>
+    <div id="main-menu">
+        <div class="lobby-header">
+            <h1>채팅에 참여하세요</h1>
+            <p>새로운 방을 만들거나 코드로 참여하세요.</p>
+        </div>
+        <button id="create-room-btn" class="main-menu-btn">새로운 방 만들기</button>
+        <div class="divider">또는</div>
+        <div id="join-form">
+            <input id="room-code-input" type="password" placeholder="초대 코드를 입력하세요" autocomplete="off" maxlength="6">
+            <button id="join-room-btn">코드로 참여하기</button>
+        </div>
+    </div>
+    <div id="profile-setup" class="hidden">
+        <div class="lobby-header">
+            <h1 id="profile-setup-title">프로필 설정</h1>
+            <p>당신의 역할과 닉네임을 정해주세요.</p>
+        </div>
+        <div class="form-group role-selection">
+            <input type="radio" name="role" value="fan" id="role-fan" checked>
+            <label for="role-fan" class="role-label">💖 팬</label>
+            <input type="radio" name="role" value="streamer" id="role-streamer">
+            <label for="role-streamer" class="role-label">🎮 스트리머</label>
+        </div>
+        <div id="streamer-options" class="form-group hidden">
+            <select id="streamer-select"></select>
+        </div>
+        <div id="streamer-key-group" class="form-group hidden">
+            <input id="streamer-key-input" type="password" placeholder="스트리머 인증 키를 입력하세요" autocomplete="off">
+        </div>
+        <div id="fan-options" class="form-group">
+            <select id="fan-group-select"></select>
+            <select id="fan-tier-select"></select>
+        </div>
+        <div class="profile-preview-container">
+            <img id="profile-preview" src="" alt="Profile Preview">
+        </div>
+        <div class="form-group" id="nickname-group">
+            <input id="nickname-input" type="text" placeholder="닉네임을 입력하세요" autocomplete="off" required>
+        </div>
+        <button id="confirm-profile-btn">입장하기</button>
+        <button id="back-to-lobby-btn" class="secondary-btn">뒤로가기</button>
+    </div>
+
+    <div id="chat-container" class="hidden">
+        <!-- '가짜팬 찾기' 모드용 멀티 채팅 뷰 -->
+        <div id="multi-chat-view" class="layout-list">
+            <!-- [수정] 단츄 채널 -->
+            <div class="chat-column" id="chat-column-danchu" data-streamer-id="danchu">
+                <div class="chat-column-header streamer-danchu">
+                    <div class="column-title"><img src="/images/streamer_danchu.png" alt="단츄"><span>단츄-단츄팬 채널</span></div>
+                    <div class="header-controls-right">
+                        <div class="volume-control-container hidden">
+                            <button class="volume-btn">🔊</button>
+                        </div>
+                        <div class="settings-container">
+                            <button class="header-btn column-settings-btn">☰</button>
+                            <div class="settings-menu hidden">
+                                <button class="menu-change-layout-btn" style="display: none;">레이아웃 변경</button>
+                                <button class="menu-copy-code-btn">📋 코드 복사</button>
+                                <button class="menu-leave-room-btn danger">🚪 방 나가기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="messages" id="messages-danchu"></ul>
+                <form class="chat-form hidden" data-groupid="danchu">
+                    <button type="button" class="end-round-btn">라운드 종료</button>
+                    <div class="input-wrapper">
+                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
+                        <button type="submit">전송</button>
+                    </div>
+                </form>
+                <div class="column-resize-handle"></div>
+            </div>
+            <!-- [수정] 코렛트 채널 -->
+            <div class="chat-column" id="chat-column-collet" data-streamer-id="collet">
+                <div class="chat-column-header streamer-collet">
+                    <div class="column-title"><img src="/images/streamer_collet.png" alt="코렛트"><span>코렛트-코렛트팬 채널</span></div>
+                    <div class="header-controls-right">
+                        <div class="volume-control-container hidden">
+                            <button class="volume-btn">🔊</button>
+                        </div>
+                        <div class="settings-container">
+                            <button class="header-btn column-settings-btn">☰</button>
+                            <div class="settings-menu hidden">
+                                <button class="menu-change-layout-btn" style="display: none;">레이아웃 변경</button>
+                                <button class="menu-copy-code-btn">📋 코드 복사</button>
+                                <button class="menu-leave-room-btn danger">🚪 방 나가기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="messages" id="messages-collet"></ul>
+                <form class="chat-form hidden" data-groupid="collet">
+                    <button type="button" class="end-round-btn">라운드 종료</button>
+                    <div class="input-wrapper">
+                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
+                        <button type="submit">전송</button>
+                    </div>
+                </form>
+                <div class="column-resize-handle"></div>
+            </div>
+            <!-- [수정] 한결 채널 -->
+            <div class="chat-column" id="chat-column-hangyeol" data-streamer-id="hangyeol">
+                <div class="chat-column-header streamer-hangyeol">
+                    <div class="column-title"><img src="/images/streamer_hangyeol.png" alt="한결"><span>한결-한결팬 채널</span></div>
+                    <div class="header-controls-right">
+                        <div class="volume-control-container hidden">
+                            <button class="volume-btn">🔊</button>
+                        </div>
+                        <div class="settings-container">
+                            <button class="header-btn column-settings-btn">☰</button>
+                            <div class="settings-menu hidden">
+                                <button class="menu-change-layout-btn" style="display: none;">레이아웃 변경</button>
+                                <button class="menu-copy-code-btn">📋 코드 복사</button>
+                                <button class="menu-leave-room-btn danger">🚪 방 나가기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="messages" id="messages-hangyeol"></ul>
+                <form class="chat-form hidden" data-groupid="hangyeol">
+                    <button type="button" class="end-round-btn">라운드 종료</button>
+                    <div class="input-wrapper">
+                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
+                        <button type="submit">전송</button>
+                    </div>
+                </form>
+                <div class="column-resize-handle"></div>
+            </div>
+            <!-- [수정] 양도끼 채널 -->
+            <div class="chat-column" id="chat-column-yangdoki" data-streamer-id="yangdoki">
+                <div class="chat-column-header streamer-yangdoki">
+                    <div class="column-title"><img src="/images/streamer_yangdoki.png" alt="양도끼"><span>양도끼-양도끼팬 채널</span></div>
+                    <div class="header-controls-right">
+                        <div class="volume-control-container hidden">
+                            <button class="volume-btn">🔊</button>
+                        </div>
+                        <div class="settings-container">
+                            <button class="header-btn column-settings-btn">☰</button>
+                            <div class="settings-menu hidden">
+                                <button class="menu-change-layout-btn" style="display: none;">레이아웃 변경</button>
+                                <button class="menu-copy-code-btn">📋 코드 복사</button>
+                                <button class="menu-leave-room-btn danger">🚪 방 나가기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="messages" id="messages-yangdoki"></ul>
+                <form class="chat-form hidden" data-groupid="yangdoki">
+                    <button type="button" class="end-round-btn">라운드 종료</button>
+                    <div class="input-wrapper">
+                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
+                        <button type="submit">전송</button>
+                    </div>
+                </form>
+                <div class="column-resize-handle"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="channel-participants-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 id="channel-participants-title">채널 참가자 목록</h2>
+            <div id="channel-participants-list"></div>
+            <button id="channel-participants-modal-close" class="modal-close-btn">×</button>
+        </div>
+    </div>
+    <div id="private-guess-modal" class="modal-overlay hidden">
+        <div class="private-guess-content">
+            <div class="private-guess-left">
+                <h3>정체 맞추기</h3>
+                <div id="private-guess-target-info"></div>
+                <div id="private-guess-options-container"></div>
+                <div id="private-guess-admin-controls" class="hidden">
+                    <button id="private-kick-btn" class="kick-btn">이 플레이어 내보내기</button>
+                </div>
+            </div>
+            <div class="private-guess-right">
+                <h3>대화 기록</h3>
+                <div class="modal-right-content-wrapper">
+                    <ul id="private-chat-log" class="messages"></ul>
+                    <div id="other-fans-container">
+                        <h3>같은 채널 팬</h3>
+                        <div id="other-fans-list"></div>
+                    </div>
+                </div>
+            </div>
+            <button id="private-guess-modal-close" class="modal-close-btn">×</button>
+        </div>
+    </div>
+    <div id="game-over-modal" class="modal-overlay hidden">
+        <div class="game-over-content">
+            <div class="game-over-header"><h1>🎉 게임 종료! 🎉</h1></div>
+            <div id="game-over-body"></div>
+            <button id="game-over-close-btn" class="main-menu-btn">확인</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/client.js"></script>
+</body>
+</html>

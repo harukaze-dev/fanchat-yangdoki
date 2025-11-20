@@ -1,0 +1,593 @@
+/* public/fake_fan.css */
+
+/* --- 가짜팬 찾기 모드 전용 스타일 --- */
+#chat-container.multi-view-active {
+    width: 98vw;
+    margin: 0 auto;
+}
+
+#multi-chat-view.layout-list {
+    display: flex;
+    width: 100%;
+    gap: 1.5rem;
+    position: relative;
+    align-items: flex-start;
+}
+#multi-chat-view.layout-list .chat-column {
+    height: 80vh; 
+}
+
+#multi-chat-view.layout-grid {
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    grid-template-rows: repeat(2, 1fr); 
+    width: 100%;
+    gap: 1.5rem;
+    position: relative;
+    height: 90vh; 
+}
+
+.chat-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #40444b;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    height: auto;
+    min-height: 0; 
+    transition: background-color 0.5s ease; 
+}
+
+/* [수정] 정체 공개 시 배경색 클래스 변경 */
+.chat-column.revealed-danchu { background-color: #fdebf0; }
+.chat-column.revealed-collet { background-color: #f8f2ff; }
+.chat-column.revealed-hangyeol { background-color: #eff1f9; }
+.chat-column.revealed-yangdoki { background-color: #f3faf7; }
+
+.chat-column.revealed .messages { background-color: transparent; }
+.chat-column.revealed .message-bubble { background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.chat-column.revealed .message-bubble .chat-message-text { color: #333; }
+.chat-column.revealed .streamer-message .message-bubble .chat-message-text { color: white; }
+.chat-column.revealed.revealed-yangdoki .streamer-message .message-bubble .chat-message-text { color: #333; }
+.chat-column.revealed .system-text { color: #555; font-style: normal; }
+.chat-column.revealed .system-nickname { color: #111; }
+
+
+.column-resize-handle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    cursor: ns-resize;
+    z-index: 10;
+}
+.column-resize-handle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+
+.chat-column-header {
+    padding: 0.5rem 1rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    font-weight: 700;
+    flex-shrink: 0;
+    cursor: grab;
+}
+.chat-column-header:active {
+    cursor: grabbing;
+}
+/* [수정] 헤더 색상 클래스 변경 */
+.chat-column-header.streamer-danchu { background-color: var(--danchu-color); }
+.chat-column-header.streamer-collet { background-color: var(--collet-color); }
+.chat-column-header.streamer-hangyeol { background-color: var(--hangyeol-color); }
+.chat-column-header.streamer-yangdoki { background-color: var(--yangdoki-color); color: #333; }
+
+.column-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    flex-grow: 1; 
+    min-width: 0; 
+}
+.column-title span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.column-title img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid white;
+    flex-shrink: 0;
+}
+.chat-column-header.streamer-yangdoki .column-title img { border-color: #333; }
+
+.header-controls-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.column-settings-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    padding: 0.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.column-settings-btn:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+.chat-column-header.streamer-yangdoki .column-settings-btn { color: #333; }
+.chat-column-header.streamer-yangdoki .volume-btn { color: #333; }
+
+
+.chat-form {
+    background: #ffffff;
+    padding: 0.75rem;
+    display: flex;
+    box-sizing: border-box;
+    border-top: 1px solid #e0e0e0;
+    gap: 0.75rem;
+    align-items: center;
+    flex-shrink: 0;
+    flex-wrap: wrap; 
+}
+
+.input-wrapper {
+    display: flex;
+    flex-grow: 1;
+    min-width: 200px;
+    gap: 0.75rem;
+}
+
+.end-round-btn {
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 2rem;
+    background-color: #28a745;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, filter 0.2s;
+    white-space: nowrap;
+}
+.end-round-btn:hover {
+    filter: brightness(1.1);
+}
+.end-round-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.input-wrapper input {
+    border: none;
+    padding: 0.6rem 1rem;
+    flex-grow: 1;
+    border-radius: 2rem;
+    background-color: #f0f2f5;
+    font-size: 0.95rem;
+    color: #111111;
+}
+.input-wrapper input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.input-wrapper button[type="submit"] {
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.2s, filter 0.2s;
+    background: var(--primary-color);
+    flex-shrink: 0;
+}
+.input-wrapper button[type="submit"]:hover { filter: brightness(1.1); }
+
+/* [수정] 입력 폼 색상 클래스 변경 */
+.chat-column[data-streamer-id="danchu"] .end-round-btn,
+.chat-column[data-streamer-id="danchu"] .input-wrapper button[type="submit"] {
+    background-color: var(--danchu-color);
+}
+.chat-column[data-streamer-id="collet"] .end-round-btn,
+.chat-column[data-streamer-id="collet"] .input-wrapper button[type="submit"] {
+    background-color: var(--collet-color);
+}
+.chat-column[data-streamer-id="hangyeol"] .end-round-btn,
+.chat-column[data-streamer-id="hangyeol"] .input-wrapper button[type="submit"] {
+    background-color: var(--hangyeol-color);
+}
+.chat-column[data-streamer-id="yangdoki"] .end-round-btn,
+.chat-column[data-streamer-id="yangdoki"] .input-wrapper button[type="submit"] {
+    background-color: var(--yangdoki-color);
+    color: #333; 
+}
+
+.guess-tag.guess-tag-superfan {
+    background-color: #ffd700; /* Gold */
+    color: #333;
+    border-color: #DAA520; /* Darker gold */
+}
+
+.guess-tag.guess-tag-yasik {
+    background-color: var(--danger-color); /* Red */
+    color: white;
+    border-color: #c9302c; /* Darker red */
+}
+
+
+/* --- 가짜팬 찾기 모드용 모달 --- */
+#channel-participants-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background-color: #2f3136;
+    border-radius: 5px;
+}
+.participant-card {
+    background-color: #40444b;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+}
+.participant-card.guessed::after {
+    content: '✔';
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    color: #28a745;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 3px black;
+}
+
+.participant-role, .revealed-identity-tag {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+/* [수정] 참가자 카드 색상 클래스 변경 */
+.fandom-danchufan .participant-role,
+#private-guess-target-info.fandom-danchufan .revealed-identity-tag {
+    background-color: var(--danchu-color);
+}
+.fandom-colletfan .participant-role,
+#private-guess-target-info.fandom-colletfan .revealed-identity-tag {
+    background-color: var(--collet-color);
+}
+.fandom-hangyeolfan .participant-role,
+#private-guess-target-info.fandom-hangyeolfan .revealed-identity-tag {
+    background-color: var(--hangyeol-color);
+}
+.fandom-yangdokifan .participant-role,
+#private-guess-target-info.fandom-yangdokifan .revealed-identity-tag {
+    background-color: var(--yangdoki-color);
+    color: #333;
+}
+
+
+.participant-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+.participant-card img.clickable {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.participant-card img.clickable:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.participant-card p {
+    margin: 0;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* '정체 맞추기' 모달 레이아웃 변경 */
+.private-guess-content {
+    position: relative; background-color: #36393f; color: #dcddde;
+    padding: 2rem; border-radius: 10px; width: 90%; max-width: 1200px;
+    display: flex; gap: 1.5rem; height: 85vh;
+}
+.private-guess-left { 
+    flex-basis: 280px; 
+    flex-shrink: 0;
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem; 
+    min-height: 0;
+}
+.private-guess-right { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    min-width: 0;
+}
+.private-guess-left h3, .private-guess-right h3 { 
+    margin: 0 0 1rem 0; 
+    padding-bottom: 1rem; 
+    border-bottom: 1px solid #4f545c; 
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.modal-right-content-wrapper {
+    display: flex;
+    gap: 1rem;
+    flex-grow: 1;
+    min-height: 0; 
+}
+#private-chat-log {
+    flex: 1; 
+    background-color: #2f3136;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+#private-guess-target-info { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+#private-guess-target-info .player-pfp { width: 100px; height: 100px; border-radius: 50%; }
+#private-guess-target-info .player-name { font-size: 1.3rem; font-weight: 700; }
+#private-guess-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; 
+}
+.guess-role-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; flex-grow: 1; background-color: #40444b; border: 2px solid #4f545c; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1rem; color: white; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s; }
+.guess-role-btn.with-pfp {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.guess-role-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-color: var(--primary-color); }
+.guess-role-btn.selected {
+    border-color: #28a745;
+    background-color: #2f4b36;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.guess-role-btn img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+#private-guess-admin-controls { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid #4f545c; }
+#private-kick-btn { width: 100%; }
+
+
+/* '정체 맞추기' 모달의 다른 팬 목록 스타일 */
+#other-fans-container {
+    flex-basis: 220px; 
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: #2f3136;
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+#other-fans-container h3 {
+    padding: 0.5rem;
+    margin: 0;
+    border-bottom: 1px solid #4f545c;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+#other-fans-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem; 
+}
+.other-fan-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: #40444b;
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+.other-fan-item:hover {
+    background-color: #4f545c;
+}
+.other-fan-pfp {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.other-fan-name {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.9rem;
+}
+.other-fan-item .guess-tag {
+    position: static; 
+    transform: none;
+    flex-shrink: 0;
+}
+
+
+/* 게임 종료 모달 스타일 */
+.game-over-content {
+    background-color: #36393f;
+    color: #dcddde;
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 1200px; 
+    max-height: 90vh;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+.game-over-header {
+    margin-bottom: 1.5rem;
+}
+.game-over-header h1 {
+    font-size: 2.5rem;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin: 0;
+}
+
+#game-over-body {
+    display: grid;
+    grid-template-columns: 1fr 2fr; 
+    gap: 1.5rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    grid-auto-rows: min-content; 
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #40444b;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+.ranking-pfp {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #5c5f66;
+    flex-shrink: 0;
+}
+.ranking-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+.ranking-text-group .rank-and-name {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+.ranking-item .rank {
+    font-weight: 900;
+    font-size: 2rem;
+    line-height: 1;
+}
+.ranking-item .rank-1 { color: #ffd700; }
+.ranking-item .rank-2 { color: #c0c0c0; }
+.ranking-item .rank-3 { color: #cd7f32; }
+.ranking-item .name { font-weight: 700; font-size: 1.4rem; }
+.ranking-item .round-info { font-size: 0.9rem; color: #b9bbbe; margin-top: 0.25rem; }
+
+
+.fandom-identity-group {
+    background-color: #2f3136;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 0.75rem;
+    align-content: flex-start; 
+    box-sizing: border-box;
+}
+
+.identity-card {
+    background-color: #40444b;
+    padding: 0.75rem;
+    border-radius: 5px;
+    text-align: center;
+    width: 120px; 
+    flex-shrink: 0;
+}
+.identity-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 0.1rem; 
+    border: 2px solid white;
+}
+.identity-card .name { 
+    font-weight: 700; 
+    font-size: 0.95rem; 
+    margin: 0 0 0.1rem 0;
+    display: block;
+}
+.identity-card .role {
+    font-size: 0.8rem;
+    color: white;
+    font-weight: bold;
+    padding: 3px 8px;
+    margin-bottom: 0.1rem; 
+    border-radius: 10px;
+    display: inline-block;
+}
+/* [수정] 게임 종료 모달의 카드 색상 클래스 변경 */
+.identity-card.fandom-danchufan .role { background-color: var(--danchu-color); }
+.identity-card.fandom-colletfan .role { background-color: var(--collet-color); }
+.identity-card.fandom-hangyeolfan .role { background-color: var(--hangyeol-color); }
+.identity-card.fandom-yangdokifan .role { background-color: var(--yangdoki-color); color: #333; }
+.identity-card .role.yasik { 
+    background-color: white;
+    color: #333;
+}
+
+#game-over-close-btn {
+    margin-top: 1.5rem;
+    width: auto;
+    align-self: center;
+    padding: 0.8rem 2.5rem;
+}
+
+/* --- TTS 재생 중인 메시지 강조 스타일 --- */
+.message-item.speaking .message-bubble {
+    background: #fefce8; /* 연노랑 배경색 */
+    box-shadow: 0 0 0 4px #facc15, 0 1px 2px rgba(0, 0, 0, 0.15); /* 선명한 노란색 테두리 */
+}
+
+.message-item.speaking:not(.streamer-message) .message-bubble::before {
+    border-right-color: #fefce8;
+}
+.message-item.speaking.streamer-message .message-bubble::before {
+    border-left-color: #fefce8;
+}
