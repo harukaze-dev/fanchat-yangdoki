@@ -10,10 +10,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+        <!-- [추가] 배경 구름 효과 (이미지 없이 CSS로 구현) -->
+    <div class="cloud-container">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
     <div id="toast-popup" class="hidden">코드 복사 완료!</div>
+    
     <div id="main-menu">
-        <!-- [수정] 로비 타이틀 이미지 위치를 헤더 위로 이동 -->
-        <img src="/images/title.png" alt="Title Image" class="lobby-title-image">
+        <img src="/images/title01.png" alt="Frame" class="main-menu-frame">
+        <img src="/images/title02.png" alt="Character" class="main-menu-deco">
+        
         <button id="create-room-btn" class="main-menu-btn">새로운 팬채팅 만들기</button>
         <div class="divider">또는</div>
         <div id="join-form">
@@ -21,6 +29,7 @@
             <button id="join-room-btn">코드로 참여하기</button>
         </div>
     </div>
+
     <div id="profile-setup" class="hidden">
         <div class="lobby-header">
             <h1 id="profile-setup-title">프로필 설정</h1>
@@ -52,17 +61,14 @@
         <button id="back-to-lobby-btn" class="secondary-btn">뒤로가기</button>
     </div>
 
+    <!-- 이하 채팅 화면 및 모달 코드 생략 (기존과 동일) -->
     <div id="chat-container" class="hidden">
-        <!-- '가짜팬 찾기' 모드용 멀티 채팅 뷰 -->
         <div id="multi-chat-view" class="layout-list">
-            <!-- 단츄 채널 -->
             <div class="chat-column" id="chat-column-danchu" data-streamer-id="danchu">
                 <div class="chat-column-header streamer-danchu">
                     <div class="column-title"><img src="/images/streamer_danchu.png" alt="단츄"><span>단츄-단츄팬 채널</span></div>
                     <div class="header-controls-right">
-                        <div class="volume-control-container hidden">
-                            <button class="volume-btn">🔊</button>
-                        </div>
+                        <div class="volume-control-container hidden"><button class="volume-btn">🔊</button></div>
                         <div class="settings-container">
                             <button class="header-btn column-settings-btn">☰</button>
                             <div class="settings-menu hidden">
@@ -75,21 +81,15 @@
                 <ul class="messages" id="messages-danchu"></ul>
                 <form class="chat-form hidden" data-groupid="danchu">
                     <button type="button" class="end-round-btn">라운드 종료</button>
-                    <div class="input-wrapper">
-                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
-                        <button type="submit">▶</button>
-                    </div>
+                    <div class="input-wrapper"><input type="text" autocomplete="off" placeholder="메시지 입력..." /><button type="submit">▶</button></div>
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
-            <!-- 코렛트 채널 -->
             <div class="chat-column" id="chat-column-collet" data-streamer-id="collet">
                 <div class="chat-column-header streamer-collet">
                     <div class="column-title"><img src="/images/streamer_collet.png" alt="코렛트"><span>코렛트-코렛트팬 채널</span></div>
                     <div class="header-controls-right">
-                        <div class="volume-control-container hidden">
-                            <button class="volume-btn">🔊</button>
-                        </div>
+                        <div class="volume-control-container hidden"><button class="volume-btn">🔊</button></div>
                         <div class="settings-container">
                             <button class="header-btn column-settings-btn">☰</button>
                             <div class="settings-menu hidden">
@@ -102,21 +102,15 @@
                 <ul class="messages" id="messages-collet"></ul>
                 <form class="chat-form hidden" data-groupid="collet">
                     <button type="button" class="end-round-btn">라운드 종료</button>
-                    <div class="input-wrapper">
-                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
-                        <button type="submit">▶</button>
-                    </div>
+                    <div class="input-wrapper"><input type="text" autocomplete="off" placeholder="메시지 입력..." /><button type="submit">▶</button></div>
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
-            <!-- 한결 채널 -->
             <div class="chat-column" id="chat-column-hangyeol" data-streamer-id="hangyeol">
                 <div class="chat-column-header streamer-hangyeol">
                     <div class="column-title"><img src="/images/streamer_hangyeol.png" alt="한결"><span>한결-한결팬 채널</span></div>
                     <div class="header-controls-right">
-                        <div class="volume-control-container hidden">
-                            <button class="volume-btn">🔊</button>
-                        </div>
+                        <div class="volume-control-container hidden"><button class="volume-btn">🔊</button></div>
                         <div class="settings-container">
                             <button class="header-btn column-settings-btn">☰</button>
                             <div class="settings-menu hidden">
@@ -129,21 +123,15 @@
                 <ul class="messages" id="messages-hangyeol"></ul>
                 <form class="chat-form hidden" data-groupid="hangyeol">
                     <button type="button" class="end-round-btn">라운드 종료</button>
-                    <div class="input-wrapper">
-                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
-                        <button type="submit">▶</button>
-                    </div>
+                    <div class="input-wrapper"><input type="text" autocomplete="off" placeholder="메시지 입력..." /><button type="submit">▶</button></div>
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
-            <!-- 양도끼 채널 -->
             <div class="chat-column" id="chat-column-yangdoki" data-streamer-id="yangdoki">
                 <div class="chat-column-header streamer-yangdoki">
                     <div class="column-title"><img src="/images/streamer_yangdoki.png" alt="양도끼"><span>양도끼-양도끼팬 채널</span></div>
                     <div class="header-controls-right">
-                        <div class="volume-control-container hidden">
-                            <button class="volume-btn">🔊</button>
-                        </div>
+                        <div class="volume-control-container hidden"><button class="volume-btn">🔊</button></div>
                         <div class="settings-container">
                             <button class="header-btn column-settings-btn">☰</button>
                             <div class="settings-menu hidden">
@@ -156,17 +144,12 @@
                 <ul class="messages" id="messages-yangdoki"></ul>
                 <form class="chat-form hidden" data-groupid="yangdoki">
                     <button type="button" class="end-round-btn">라운드 종료</button>
-                    <div class="input-wrapper">
-                        <input type="text" autocomplete="off" placeholder="메시지 입력..." />
-                        <button type="submit">▶</button>
-                    </div>
+                    <div class="input-wrapper"><input type="text" autocomplete="off" placeholder="메시지 입력..." /><button type="submit">▶</button></div>
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
         </div>
     </div>
-
-    <!-- Modals -->
     <div id="channel-participants-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <h2 id="channel-participants-title">채널 참가자 목록</h2>
