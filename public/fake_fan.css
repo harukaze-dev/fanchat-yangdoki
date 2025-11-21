@@ -1,52 +1,119 @@
 /* public/fake_fan.css */
 
 /* --- 가짜팬 찾기 모드 전용 스타일 --- */
-#chat-container.multi-view-active {
-    width: 98vw;
-    margin: 0 auto;
+
+/* [수정] 채팅방 진입 시 body 스타일 재정의 */
+body.in-chat {
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: black;
 }
 
+/* [수정] 전체 컨테이너 스타일 */
+#chat-container.multi-view-active {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    
+    /* 
+       ⚠️ [사용자 수정값 유지됨] ⚠️ 
+    */
+    padding: 3.5vh 2.5vw 9.7vh 2.5vw;
+    
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+}
+
+/* 프레임 이미지 오버레이 및 그림자 효과 */
+#chat-container.multi-view-active::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    background-image: url('/images/333.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    
+    z-index: 999;
+    pointer-events: none; /* 클릭 투과 */
+    
+    /* 프레임 자체 그림자 */
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.6));
+}
+
+/* 내부 뷰 컨테이너 */
 #multi-chat-view.layout-list {
     display: flex;
     width: 100%;
-    gap: 1.5rem;
+    height: 100%;
+    gap: 0px;
     position: relative;
-    align-items: flex-start;
-}
-#multi-chat-view.layout-list .chat-column {
-    height: 80vh; 
+    align-items: stretch;
+    z-index: 1;
 }
 
+#multi-chat-view.layout-list .chat-column {
+    height: auto;
+    flex: 1;
+}
+
+/* 그리드 레이아웃 대응 */
 #multi-chat-view.layout-grid {
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
     grid-template-rows: repeat(2, 1fr); 
     width: 100%;
-    gap: 1.5rem;
+    height: 100%;
+    gap: 0;
     position: relative;
-    height: 90vh; 
+    z-index: 1;
 }
 
+/* 채팅 컬럼 공통 스타일 */
 .chat-column {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: #40444b;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    border-radius: 10px;
+    background-color: rgba(64, 68, 75, 0.9);
+    box-shadow: none;
+    border-radius: 0;
     overflow: hidden;
     position: relative;
-    height: auto;
     min-height: 0; 
-    transition: background-color 0.5s ease; 
+    transition: background-color 0.5s ease;
+    
+    /* 우측 나무 기둥 구분선 */
+    border-right: 8px solid #8B5A2B; 
 }
 
-/* [수정] 정체 공개 시 배경색 클래스 변경 */
+/* 마지막 컬럼 및 그리드 구분선 처리 */
+#multi-chat-view.layout-list .chat-column:last-child {
+    border-right: none;
+}
+#multi-chat-view.layout-grid .chat-column:nth-child(2n) {
+    border-right: none;
+}
+#multi-chat-view.layout-grid .chat-column:nth-child(1),
+#multi-chat-view.layout-grid .chat-column:nth-child(2) {
+    border-bottom: 4px solid #8B5A2B;
+}
+
+
+/* 정체 공개 시 배경색 */
 .chat-column.revealed-danchu { background-color: #fdebf0; }
 .chat-column.revealed-collet { background-color: #f8f2ff; }
 .chat-column.revealed-hangyeol { background-color: #eff1f9; }
 .chat-column.revealed-yangdoki { background-color: #f3faf7; }
 
+/* 공개된 상태의 메시지 스타일 */
 .chat-column.revealed .messages { background-color: transparent; }
 .chat-column.revealed .message-bubble { background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 .chat-column.revealed .message-bubble .chat-message-text { color: #333; }
@@ -56,75 +123,101 @@
 .chat-column.revealed .system-nickname { color: #111; }
 
 
+/* 높이 조절 핸들 */
 .column-resize-handle {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 10px;
+    height: 5px;
     cursor: ns-resize;
     z-index: 10;
+    background-color: rgba(0,0,0,0.1);
 }
 .column-resize-handle:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 
+/* [수정] 컬럼 헤더 스타일 */
 .chat-column-header {
-    padding: 0.5rem 1rem;
+    /* [수정] 하단 정렬을 위해 padding-bottom 추가 (8px) */
+    padding: 0 0.3rem 8px 1rem;
+    
     color: white;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    
+    /* [수정] 아이템을 하단 라인에 맞춤 */
+    align-items: flex-end; 
+    
+    justify-content: space-between; 
+    
+    border-bottom: none;
     font-weight: 700;
     flex-shrink: 0;
     cursor: grab;
+    
+    /* 사용자 수정값 유지 (90px) */
+    height: 90px; 
 }
 .chat-column-header:active {
     cursor: grabbing;
 }
-/* [수정] 헤더 색상 클래스 변경 */
+
+/* 헤더 색상 클래스 */
 .chat-column-header.streamer-danchu { background-color: var(--danchu-color); }
 .chat-column-header.streamer-collet { background-color: var(--collet-color); }
 .chat-column-header.streamer-hangyeol { background-color: var(--hangyeol-color); }
 .chat-column-header.streamer-yangdoki { background-color: var(--yangdoki-color); color: #333; }
 
+/* 타이틀 영역 */
 .column-title {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     cursor: pointer;
-    flex-grow: 1; 
-    min-width: 0; 
-}
-.column-title span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
+/* 텍스트만 숨김 */
+.column-title span {
+    display: none;
+}
+
+/* 프로필 사진 스타일 */
 .column-title img {
-    width: 32px;
-    height: 32px;
+    width: 45px; 
+    height: 45px;
     border-radius: 50%;
     border: 2px solid white;
     flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 .chat-column-header.streamer-yangdoki .column-title img { border-color: #333; }
 
+/* [수정] 우측 컨트롤 버튼 스타일 */
 .header-controls-right {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+    
+    background-color: rgba(0, 0, 0, 0.2); 
+    padding: 4px;
+    border-radius: 8px;
+    
+    margin-right: 15x; 
+    /* 하단 정렬 시 버튼 컨테이너가 너무 바닥에 붙지 않도록 미세 조정 가능 */
+    margin-bottom: 2px; 
 }
 
 .column-settings-btn {
     background: none;
     border: none;
     color: white;
-    font-size: 1.2rem;
+    
+    /* [수정] 버튼 사이즈 축소 (1.2rem -> 1rem) */
+    font-size: 0.8rem; 
+    
     padding: 0.2rem;
     line-height: 1;
     cursor: pointer;
@@ -137,14 +230,18 @@
 .chat-column-header.streamer-yangdoki .column-settings-btn { color: #333; }
 .chat-column-header.streamer-yangdoki .volume-btn { color: #333; }
 
+.volume-btn {
+    font-size: 0.8rem; 
+}
 
+/* 채팅 입력 폼 스타일 */
 .chat-form {
     background: #ffffff;
-    padding: 0.75rem;
+    padding: 0.5rem;
     display: flex;
     box-sizing: border-box;
     border-top: 1px solid #e0e0e0;
-    gap: 0.75rem;
+    gap: 0.5rem;
     align-items: center;
     flex-shrink: 0;
     flex-wrap: wrap; 
@@ -153,12 +250,12 @@
 .input-wrapper {
     display: flex;
     flex-grow: 1;
-    min-width: 200px;
-    gap: 0.75rem;
+    min-width: 150px;
+    gap: 0.5rem;
 }
 
 .end-round-btn {
-    padding: 0.6rem 1rem;
+    padding: 0.4rem 0.8rem;
     border: none;
     border-radius: 2rem;
     background-color: #28a745;
@@ -167,6 +264,7 @@
     cursor: pointer;
     transition: background-color 0.2s, filter 0.2s;
     white-space: nowrap;
+    font-size: 0.9rem;
 }
 .end-round-btn:hover {
     filter: brightness(1.1);
@@ -178,11 +276,11 @@
 
 .input-wrapper input {
     border: none;
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 0.8rem;
     flex-grow: 1;
     border-radius: 2rem;
     background-color: #f0f2f5;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #111111;
 }
 .input-wrapper input:focus {
@@ -193,18 +291,19 @@
 .input-wrapper button[type="submit"] {
     border: none;
     border-radius: 50%;
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
     color: #fff;
     cursor: pointer;
     font-weight: 700;
     transition: background-color 0.2s, filter 0.2s;
     background: var(--primary-color);
     flex-shrink: 0;
+    font-size: 0.8rem;
 }
 .input-wrapper button[type="submit"]:hover { filter: brightness(1.1); }
 
-/* [수정] 입력 폼 색상 클래스 변경 */
+/* 입력 폼 색상 클래스 */
 .chat-column[data-streamer-id="danchu"] .end-round-btn,
 .chat-column[data-streamer-id="danchu"] .input-wrapper button[type="submit"] {
     background-color: var(--danchu-color);
@@ -279,7 +378,7 @@
     margin-bottom: 0.5rem;
 }
 
-/* [수정] 참가자 카드 색상 클래스 변경 */
+/* 참가자 카드 색상 클래스 */
 .fandom-danchufan .participant-role,
 #private-guess-target-info.fandom-danchufan .revealed-identity-tag {
     background-color: var(--danchu-color);
@@ -322,7 +421,7 @@
     text-overflow: ellipsis;
 }
 
-/* '정체 맞추기' 모달 레이아웃 변경 */
+/* '정체 맞추기' 모달 레이아웃 */
 .private-guess-content {
     position: relative; background-color: #36393f; color: #dcddde;
     padding: 2rem; border-radius: 10px; width: 90%; max-width: 1200px;
@@ -562,7 +661,7 @@
     border-radius: 10px;
     display: inline-block;
 }
-/* [수정] 게임 종료 모달의 카드 색상 클래스 변경 */
+/* 게임 종료 모달의 카드 색상 클래스 */
 .identity-card.fandom-danchufan .role { background-color: var(--danchu-color); }
 .identity-card.fandom-colletfan .role { background-color: var(--collet-color); }
 .identity-card.fandom-hangyeolfan .role { background-color: var(--hangyeol-color); }

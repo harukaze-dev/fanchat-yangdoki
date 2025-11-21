@@ -11,8 +11,8 @@
                 "superFanPfp": "/images/fan_super_danchu.png",
                 "yasikPfp": "/images/fan_udong.png",
                 "tiers": [
-                    { "name": "단츄팬", "isSuperFan": false, "isYasik": false },
-                    { "name": "슈퍼 단츄팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "단데기", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 단데기", "isSuperFan": true, "isYasik": false },
                     { "name": "유동팬", "isSuperFan": false, "isYasik": true }
                 ]
             }
@@ -45,8 +45,8 @@
                 "superFanPfp": "/images/fan_super_hangyeol.png",
                 "yasikPfp": "/images/fan_udong.png",
                 "tiers": [
-                    { "name": "한결팬", "isSuperFan": false, "isYasik": false },
-                    { "name": "슈퍼 한결팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "단결이", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 단결이", "isSuperFan": true, "isYasik": false },
                     { "name": "유동팬", "isSuperFan": false, "isYasik": true }
                 ]
             }
@@ -62,8 +62,8 @@
                 "superFanPfp": "/images/fan_super_yangdoki.png",
                 "yasikPfp": "/images/fan_udong.png",
                 "tiers": [
-                    { "name": "양도끼팬", "isSuperFan": false, "isYasik": false },
-                    { "name": "슈퍼 양도끼팬", "isSuperFan": true, "isYasik": false },
+                    { "name": "함박이", "isSuperFan": false, "isYasik": false },
+                    { "name": "슈퍼 함박이", "isSuperFan": true, "isYasik": false },
                     { "name": "유동팬", "isSuperFan": false, "isYasik": true }
                 ]
             }
