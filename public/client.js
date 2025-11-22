@@ -30,7 +30,8 @@ const roomCodeInput = document.getElementById('room-code-input');
 const joinRoomBtn = document.getElementById('join-room-btn');
 const profileSetup = document.getElementById('profile-setup');
 const confirmProfileBtn = document.getElementById('confirm-profile-btn');
-const profileSetupTitle = document.getElementById('profile-setup-title');
+// [수정] HTML에서 제거된 타이틀 요소 참조 삭제
+// const profileSetupTitle = document.getElementById('profile-setup-title'); 
 const roleRadios = document.querySelectorAll('input[name="role"]');
 const streamerOptions = document.getElementById('streamer-options');
 const streamerKeyGroup = document.getElementById('streamer-key-group');
@@ -67,12 +68,8 @@ let sortable = null;
 let resizingColumn = null;
 
 // 화면 레이아웃을 적용하는 함수
-/**
- * 지정된 레이아웃에 맞게 CSS 클래스를 변경하고 버튼 텍스트를 업데이트하는 함수
- * @param {string} layout - 적용할 레이아웃 이름 ('grid' 또는 'list')
- */
 function applyLayout(layout) {
-    currentLayout = layout; // 현재 레이아웃 상태 업데이트
+    currentLayout = layout; 
     if (layout === 'grid') {
         multiChatView.classList.remove('layout-list');
         multiChatView.classList.add('layout-grid');
@@ -81,7 +78,6 @@ function applyLayout(layout) {
         multiChatView.classList.add('layout-list');
     }
 
-    // 모든 레이아웃 변경 버튼의 텍스트를 업데이트
     document.querySelectorAll('.menu-change-layout-btn').forEach(btn => {
         btn.textContent = layout === 'grid' ? '리스트형 보기' : '그리드형 보기';
     });
@@ -90,7 +86,6 @@ function applyLayout(layout) {
 // 방장 전용 UI를 업데이트하는 함수
 function updateOwnerSpecificUI() {
     const isOwner = socket.id === currentOwnerId;
-    // 모든 설정 메뉴 내의 레이아웃 변경 버튼을 찾아 방장일 경우에만 표시
     document.querySelectorAll('.menu-change-layout-btn').forEach(btn => {
         btn.style.display = isOwner ? 'block' : 'none';
     });
@@ -98,7 +93,7 @@ function updateOwnerSpecificUI() {
 
 
 /**
- * TTS 및 사운드 관련 함수들... (이전과 동일)
+ * TTS 및 사운드 관련 함수들...
  */
 function initializeTTS() {
     const assignVoices = () => { ttsVoices = window.speechSynthesis.getVoices(); };
@@ -153,6 +148,7 @@ function updateEndRoundButtonsAfterGameOver() {
     });
 }
 function updateColumnUIVisibility() {
+    if (!gameConfig) return; // config 체크 추가
     const streamerIdToFandomId = new Map(gameConfig.streamers.map(s => [s.id, s.fandom.id]));
     document.querySelectorAll('.chat-column').forEach(column => {
         const columnStreamerId = column.dataset.streamerId;
@@ -319,37 +315,72 @@ function showChatRoom() {
 }
 
 //--- 이벤트 리스너 설정 ---//
-// [수정] '방 만들기' 클릭 시 '스트리머' 역할로 고정하는 로직 추가
+
+// [수정] '새로운 팬채팅 만들기' 클릭 시
 createRoomBtn.addEventListener('click', () => { 
     userIntent = 'create'; 
     mainMenu.classList.add('hidden'); 
     profileSetup.classList.remove('hidden'); 
-    profileSetupTitle.textContent = '새로운 팬챗 프로필 설정'; 
     
-    // 스트리머 역할로 강제 선택
+    // HTML 요소에서 해당 ID 제거됨에 따라 주석 처리
+    // profileSetupTitle.textContent = '새로운 팬챗 프로필 설정'; 
+    
+    // 1. 강제로 스트리머 선택
     document.getElementById('role-streamer').checked = true;
     
-    // 팬 역할 라디오 버튼과 라벨을 숨김
+    // 2. 팬 선택 옵션(라디오 버튼 및 라벨) 숨기기
     document.getElementById('role-fan').style.display = 'none';
     document.querySelector('label[for="role-fan"]').style.display = 'none';
 
     updateProfileSetupUI(); 
 });
 
+// [수정] '코드로 참여하기' 클릭 시
 joinRoomBtn.addEventListener('click', () => {
-    const code = roomCodeInput.value.trim().toUpperCase(); if (!code) return alert('초대 코드를 입력해주세요.');
-    userIntent = 'join'; roomToJoin = code; mainMenu.classList.add('hidden');
-    profileSetup.classList.remove('hidden'); profileSetupTitle.textContent = '프로필 설정';
+    const code = roomCodeInput.value.trim().toUpperCase(); 
+    if (!code) return alert('초대 코드를 입력해주세요.');
+    
+    userIntent = 'join'; 
+    roomToJoin = code; 
+    mainMenu.classList.add('hidden');
+    profileSetup.classList.remove('hidden'); 
+    // profileSetupTitle.textContent = '프로필 설정';
+
+    // 1. 팬 선택 옵션 다시 보이기 (방 만들기에서 숨겼을 수 있으므로 복구)
+    document.getElementById('role-fan').style.display = '';
+    document.querySelector('label[for="role-fan"]').style.display = '';
+
+    // 2. 참여 시 기본 선택은 팬으로 설정
+    document.getElementById('role-fan').checked = true;
+
     updateProfileSetupUI();
 });
+
+// [수정] 뒤로가기 버튼
+backToLobbyBtn.addEventListener('click', () => { 
+    profileSetup.classList.add('hidden'); 
+    mainMenu.classList.remove('hidden'); 
+
+    // 초기화: 팬 역할 라디오 버튼과 라벨을 다시 보이게 함
+    document.getElementById('role-fan').style.display = '';
+    document.querySelector('label[for="role-fan"]').style.display = '';
+
+    // 기본 선택을 '팬'으로 되돌림
+    document.getElementById('role-fan').checked = true;
+});
+
 roleRadios.forEach(radio => radio.addEventListener('change', updateProfileSetupUI));
 streamerSelect.addEventListener('change', updateProfileSetupUI);
 fanGroupSelect.addEventListener('change', () => { updateFanTiers(); updateProfilePreview(); });
 fanTierSelect.addEventListener('change', updateProfilePreview);
+
 confirmProfileBtn.addEventListener('click', () => {
-    const nickname = nicknameInput.value.trim(); if (!nickname) return alert('닉네임을 입력해주세요!');
+    const nickname = nicknameInput.value.trim(); 
+    if (!nickname) return alert('닉네임을 입력해주세요!');
+    
     const role = document.querySelector('input[name="role"]:checked').value;
     const userData = { nickname, role };
+    
     if (role === 'streamer') {
         const streamer = gameConfig.streamers.find(s => s.id === streamerSelect.value);
         userData.pfp = streamer.pfp; userData.streamerId = streamer.id;
@@ -365,18 +396,6 @@ confirmProfileBtn.addEventListener('click', () => {
     else if (userIntent === 'join') socket.emit('join room', { roomId: roomToJoin, userData: userData });
 });
 
-// [수정] 뒤로가기 시 프로필 설정 화면을 초기 상태로 리셋하는 로직 추가
-backToLobbyBtn.addEventListener('click', () => { 
-    profileSetup.classList.add('hidden'); 
-    mainMenu.classList.remove('hidden'); 
-
-    // 팬 역할 라디오 버튼과 라벨을 다시 보이게 함
-    document.getElementById('role-fan').style.display = '';
-    document.querySelector('label[for="role-fan"]').style.display = '';
-
-    // 기본 선택을 '팬'으로 되돌림
-    document.getElementById('role-fan').checked = true;
-});
 
 privateGuessModalClose.onclick = () => { privateGuessModal.classList.add('hidden'); privateGuessTargetUser = null; };
 channelParticipantsModalClose.onclick = () => channelParticipantsModal.classList.add('hidden');
@@ -417,31 +436,31 @@ document.addEventListener('mouseup', () => {
 //--- 소켓 이벤트 핸들러 ---//
 socket.on('server config', (config) => { gameConfig = config; initialize(); initializeTTS(); });
 function onRoomJoined(data) {
-    const { roomId, users, ownerId, mode, currentRound, layout } = data; // layout 정보 받기
+    const { roomId, users, ownerId, mode, currentRound, layout } = data; 
     currentRoomId = roomId; currentOwnerId = ownerId; currentMode = mode;
     allUsers = users; currentRoundNumber = currentRound; isGameOver = false;
     currentGuesses = {};
     document.querySelectorAll('#multi-chat-view .messages').forEach(ul => ul.innerHTML = '');
     updateUserList(users);
     showChatRoom();
-    applyLayout(layout); // 입장 시 레이아웃 적용
-    updateOwnerSpecificUI(); // 방장 UI 업데이트
+    applyLayout(layout); 
+    updateOwnerSpecificUI(); 
     addSystemMessage(null, `채팅방에 오신 것을 환영합니다!`);
 }
 socket.on('room created', onRoomJoined);
 socket.on('join success', onRoomJoined);
-socket.on('layout changed', ({ layout }) => { applyLayout(layout); }); // 레이아웃 변경 이벤트 수신
+socket.on('layout changed', ({ layout }) => { applyLayout(layout); }); 
 socket.on('round advanced', (newRound) => { currentRoundNumber = newRound; updateRoundEndButtons(); });
 socket.on('user joined', (data) => { playSound('join.MP3'); allUsers = data.users; updateUserList(data.users); addSystemMessage(data.user, '님이 입장했습니다.'); });
 socket.on('user left', (data) => { playSound('leave.MP3'); allUsers = data.users; updateUserList(data.users); const message = data.reason ? `님이 ${data.reason} 처리되었습니다.` : '님이 퇴장했습니다.'; addSystemMessage(data.user, message); });
 socket.on('new host', (data) => {
     currentOwnerId = data.newOwner.id; allUsers = data.users; updateUserList(data.users);
-    updateColumnUIVisibility(); updateOwnerSpecificUI(); // 방장 변경 시 UI 업데이트
+    updateColumnUIVisibility(); updateOwnerSpecificUI(); 
     addGameMessage(`👑 ${data.newOwner.nickname}님이 새로운 방장이 되었습니다.`, 'reveal');
 });
 socket.on('user list', (data) => {
     currentOwnerId = data.ownerId; allUsers = data.users; updateUserList(data.users);
-    updateColumnUIVisibility(); updateOwnerSpecificUI(); // 유저 목록 갱신 시 UI 업데이트
+    updateColumnUIVisibility(); updateOwnerSpecificUI(); 
 });
 socket.on('kicked', (reason) => { alert(reason); window.location.reload(); });
 socket.on('room closed', (reason) => { alert(reason); window.location.reload(); });
@@ -452,7 +471,7 @@ socket.on('error message', (message) => {
 });
 
 /**
- * 메시지 및 게임 로직 관련 함수들... (이전과 거의 동일)
+ * 메시지 및 게임 로직 관련 함수들... 
  */
 function addChatMessage(data) {
     playSound('chat.MP3');
