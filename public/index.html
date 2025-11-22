@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- [배경] 구름 효과 (5개로 증가 및 사이즈 확대) -->
+    <!-- [배경] 구름 효과 -->
     <div class="cloud-container">
         <div class="cloud cloud-1"></div>
         <div class="cloud cloud-2"></div>
@@ -18,6 +18,10 @@
         <div class="cloud cloud-4"></div>
         <div class="cloud cloud-5"></div>
     </div>
+
+    <!-- [신규] Frame 02 (중간 배경 프레임) -->
+    <!-- 채팅창과 연동되어 높이가 조절될 실제 DOM 요소입니다. -->
+    <div id="frame-02" class="hidden"></div>
 
     <!-- [팝업] 토스트 메시지 -->
     <div id="toast-popup" class="hidden">코드 복사 완료!</div>
@@ -48,8 +52,6 @@
         <img src="/images/title01.png" alt="Frame" class="main-menu-frame">
         
         <div class="lobby-content-wrapper">
-            <!-- [삭제됨] 상단 텍스트(헤더) 제거 요청 반영 -->
-
             <div class="form-group role-selection">
                 <input type="radio" name="role" value="fan" id="role-fan" checked>
                 <label for="role-fan" class="role-label">💖 팬</label>
@@ -73,7 +75,6 @@
                 <input id="nickname-input" type="text" placeholder="닉네임을 입력하세요" autocomplete="off" required>
             </div>
             
-            <!-- [수정] 버튼 가로 배치 그룹 -->
             <div class="profile-btn-group">
                 <button id="confirm-profile-btn">입장하기</button>
                 <button id="back-to-lobby-btn" class="secondary-btn">뒤로가기</button>
@@ -81,7 +82,7 @@
         </div>
     </div>
 
-    <!-- [채팅 화면] (기존 유지) -->
+    <!-- [채팅 화면] -->
     <div id="chat-container" class="hidden">
         <div id="multi-chat-view" class="layout-list">
             <!-- 단츄 -->
