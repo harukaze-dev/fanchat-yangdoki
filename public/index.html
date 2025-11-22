@@ -10,60 +10,81 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-        <!-- [추가] 배경 구름 효과 (이미지 없이 CSS로 구현) -->
+    <!-- [배경] 구름 효과 (5개로 증가 및 사이즈 확대) -->
     <div class="cloud-container">
         <div class="cloud cloud-1"></div>
         <div class="cloud cloud-2"></div>
         <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+        <div class="cloud cloud-5"></div>
     </div>
+
+    <!-- [팝업] 토스트 메시지 -->
     <div id="toast-popup" class="hidden">코드 복사 완료!</div>
     
+    <!-- [메인 메뉴] -->
     <div id="main-menu">
+        <!-- 프레임 이미지 (z-index: 20) -->
         <img src="/images/title01.png" alt="Frame" class="main-menu-frame">
+        <!-- 캐릭터 데코 (z-index: 5) -->
         <img src="/images/title02.png" alt="Character" class="main-menu-deco">
         
-        <button id="create-room-btn" class="main-menu-btn">새로운 팬채팅 만들기</button>
-        <div class="divider">또는</div>
-        <div id="join-form">
-            <input id="room-code-input" type="password" placeholder="초대 코드를 입력하세요" autocomplete="off" maxlength="6">
-            <button id="join-room-btn">코드로 참여하기</button>
+        <!-- 로비 타이틀 이미지 (박스 위로 배치, z-index: 50) -->
+        <img src="/images/title03.png" alt="오픈채팅 로비" class="main-menu-title">
+        
+        <!-- 내용물 -->
+        <div class="lobby-content-wrapper">
+            <button id="create-room-btn" class="main-menu-btn">새로운 팬채팅 만들기</button>
+            <div class="divider">또는</div>
+            <div id="join-form">
+                <input id="room-code-input" type="password" placeholder="초대 코드를 입력하세요" autocomplete="off" maxlength="6">
+                <button id="join-room-btn">코드로 참여하기</button>
+            </div>
         </div>
     </div>
 
+    <!-- [프로필 설정] -->
     <div id="profile-setup" class="hidden">
-        <div class="lobby-header">
-            <h1 id="profile-setup-title">프로필 설정</h1>
-            <p>당신의 역할과 닉네임을 정해주세요.</p>
+        <img src="/images/title01.png" alt="Frame" class="main-menu-frame">
+        
+        <div class="lobby-content-wrapper">
+            <!-- [삭제됨] 상단 텍스트(헤더) 제거 요청 반영 -->
+
+            <div class="form-group role-selection">
+                <input type="radio" name="role" value="fan" id="role-fan" checked>
+                <label for="role-fan" class="role-label">💖 팬</label>
+                <input type="radio" name="role" value="streamer" id="role-streamer">
+                <label for="role-streamer" class="role-label">🎮 스트리머</label>
+            </div>
+            <div id="streamer-options" class="form-group hidden">
+                <select id="streamer-select"></select>
+            </div>
+            <div id="streamer-key-group" class="form-group hidden">
+                <input id="streamer-key-input" type="password" placeholder="스트리머 인증 키를 입력하세요" autocomplete="off">
+            </div>
+            <div id="fan-options" class="form-group">
+                <select id="fan-group-select"></select>
+                <select id="fan-tier-select"></select>
+            </div>
+            <div class="profile-preview-container">
+                <img id="profile-preview" src="" alt="Profile Preview">
+            </div>
+            <div class="form-group" id="nickname-group">
+                <input id="nickname-input" type="text" placeholder="닉네임을 입력하세요" autocomplete="off" required>
+            </div>
+            
+            <!-- [수정] 버튼 가로 배치 그룹 -->
+            <div class="profile-btn-group">
+                <button id="confirm-profile-btn">입장하기</button>
+                <button id="back-to-lobby-btn" class="secondary-btn">뒤로가기</button>
+            </div>
         </div>
-        <div class="form-group role-selection">
-            <input type="radio" name="role" value="fan" id="role-fan" checked>
-            <label for="role-fan" class="role-label">💖 팬</label>
-            <input type="radio" name="role" value="streamer" id="role-streamer">
-            <label for="role-streamer" class="role-label">🎮 스트리머</label>
-        </div>
-        <div id="streamer-options" class="form-group hidden">
-            <select id="streamer-select"></select>
-        </div>
-        <div id="streamer-key-group" class="form-group hidden">
-            <input id="streamer-key-input" type="password" placeholder="스트리머 인증 키를 입력하세요" autocomplete="off">
-        </div>
-        <div id="fan-options" class="form-group">
-            <select id="fan-group-select"></select>
-            <select id="fan-tier-select"></select>
-        </div>
-        <div class="profile-preview-container">
-            <img id="profile-preview" src="" alt="Profile Preview">
-        </div>
-        <div class="form-group" id="nickname-group">
-            <input id="nickname-input" type="text" placeholder="닉네임을 입력하세요" autocomplete="off" required>
-        </div>
-        <button id="confirm-profile-btn">입장하기</button>
-        <button id="back-to-lobby-btn" class="secondary-btn">뒤로가기</button>
     </div>
 
-    <!-- 이하 채팅 화면 및 모달 코드 생략 (기존과 동일) -->
+    <!-- [채팅 화면] (기존 유지) -->
     <div id="chat-container" class="hidden">
         <div id="multi-chat-view" class="layout-list">
+            <!-- 단츄 -->
             <div class="chat-column" id="chat-column-danchu" data-streamer-id="danchu">
                 <div class="chat-column-header streamer-danchu">
                     <div class="column-title"><img src="/images/streamer_danchu.png" alt="단츄"><span>단츄-단츄팬 채널</span></div>
@@ -85,6 +106,7 @@
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
+            <!-- 코렛트 -->
             <div class="chat-column" id="chat-column-collet" data-streamer-id="collet">
                 <div class="chat-column-header streamer-collet">
                     <div class="column-title"><img src="/images/streamer_collet.png" alt="코렛트"><span>코렛트-코렛트팬 채널</span></div>
@@ -106,6 +128,7 @@
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
+            <!-- 한결 -->
             <div class="chat-column" id="chat-column-hangyeol" data-streamer-id="hangyeol">
                 <div class="chat-column-header streamer-hangyeol">
                     <div class="column-title"><img src="/images/streamer_hangyeol.png" alt="한결"><span>한결-한결팬 채널</span></div>
@@ -127,6 +150,7 @@
                 </form>
                 <div class="column-resize-handle"></div>
             </div>
+            <!-- 양도끼 -->
             <div class="chat-column" id="chat-column-yangdoki" data-streamer-id="yangdoki">
                 <div class="chat-column-header streamer-yangdoki">
                     <div class="column-title"><img src="/images/streamer_yangdoki.png" alt="양도끼"><span>양도끼-양도끼팬 채널</span></div>
@@ -150,6 +174,8 @@
             </div>
         </div>
     </div>
+
+    <!-- [모달] 채널 참가자 목록 -->
     <div id="channel-participants-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <h2 id="channel-participants-title">채널 참가자 목록</h2>
@@ -157,6 +183,8 @@
             <button id="channel-participants-modal-close" class="modal-close-btn">×</button>
         </div>
     </div>
+
+    <!-- [모달] 정체 맞추기 (스트리머용) -->
     <div id="private-guess-modal" class="modal-overlay hidden">
         <div class="private-guess-content">
             <div class="private-guess-left">
@@ -180,6 +208,8 @@
             <button id="private-guess-modal-close" class="modal-close-btn">×</button>
         </div>
     </div>
+
+    <!-- [모달] 게임 종료 -->
     <div id="game-over-modal" class="modal-overlay hidden">
         <div class="game-over-content">
             <div class="game-over-header"><h1>🎉 게임 종료! 🎉</h1></div>
