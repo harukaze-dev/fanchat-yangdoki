@@ -1,166 +1,53 @@
 /* public/fake_fan.css */
 
-/* --- 가짜팬 찾기 모드 전용 스타일 --- */
+/* --- 기본 채팅방 레이아웃 --- */
+body.in-chat { padding: 0 !important; overflow: hidden !important; }
+body.in-chat .cloud-container { display: none !important; }
 
-/* 
-   [수정] 채팅방 진입 시 body 스타일 재정의 
-*/
-body.in-chat {
-    padding: 0 !important;
-    overflow: hidden !important;
-}
-
-/* 
-   [신규] 채팅방 진입 시 구름 숨김 처리 
-*/
-body.in-chat .cloud-container {
-    display: none !important;
-}
-
-/* [수정] 전체 컨테이너 스타일 */
 #chat-container.multi-view-active {
-    width: 100vw;
-    height: 80vh;
-    margin: 0;
-    position: relative;
-    
-    /* 
-       [수정] 패딩 조정하여 빈 공간(Gap) 제거
-       - padding-bottom을 JS에서 계산한 변수 var(--frame-bottom-padding)로 설정
-       - 기본값은 0px로 두되 JS가 로드되면 즉시 변경됨
-    */
-    padding: 3.5vh 2.5vw var(--frame-bottom-padding, 0px) 2.5vw;
-    
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: transparent;
+    width: 100vw; height: 80vh; margin: 0; position: relative;
+    padding: 1.5vh 2.5vw var(--frame-bottom-padding, 0px) 2.5vw;
+    box-sizing: border-box; display: flex; justify-content: center;
+    align-items: center; background: transparent;
 }
 
-/* 
-    [수정] 프레임 이미지 레이어 1 (가장 상위: frame00.png) 
-    - 위치: fixed, 상단 0
-    - Z-index: 1000 (맨 앞)
-    - 너비: 100vw (100%)
-    - 높이: 70vh
-*/
+/* 상단 프레임 (z-index: 1000) */
 body.in-chat::after {
-    content: "";
-    position: fixed; 
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 70vh; 
-    
-    background-image: url('/images/frame00.png');
-    background-repeat: no-repeat;
-    background-position: center top; 
-    background-size: 100% auto; 
-    
-    z-index: 1000; /* 가장 최상단 */
-    pointer-events: none; 
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.6));
+    content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 5vw; 
+    background-image: url('/images/frame00.png'); background-repeat: no-repeat;
+    background-position: center top; background-size: 100% 100%; 
+    z-index: 1000; pointer-events: none; filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
 }
 
-/* 
-    [수정] 프레임 이미지 레이어 2 (하단: frame01.png) 
-    - 채팅창 사이즈 변경 시 하단은 고정되고 상단이 잘리는(Crop) 효과
-    - Z-index: 999 (00 뒤, 02 앞)
-*/
+/* 하단 프레임 (z-index: 999) */
 #chat-container.multi-view-active::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    
-    background-image: url('/images/frame01.png');
-    background-repeat: no-repeat;
-    
-    /* 하단 고정 */
-    background-position: center bottom;
-    background-size: 100% auto; 
-    
-    z-index: 999; /* 00 뒤, 02 앞 */
-    pointer-events: none; 
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('/images/frame01.png'); background-repeat: no-repeat;
+    background-position: center bottom; background-size: 100% auto; 
+    z-index: 999; pointer-events: none; filter: drop-shadow(0 40px 35px rgba(0, 0, 0, 1));
 }
 
-/* 
-    [신규] 프레임 이미지 레이어 3 (중간: frame02.png)
-    - 실제 DOM 요소(#frame-02)에 스타일 적용
-    - JS로 높이 조절 예정
-    - Z-index: 998 (맨 뒤)
-*/
 #frame-02 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw; /* 가로 꽉 채움 */
-    /* 높이는 JS에서 제어 (채팅창 하단까지) */
-    
-    background-image: url('/images/frame02.png');
-    background-repeat: no-repeat;
-    background-position: center top;
-    
-    /* 세로 길이를 채팅창 길이에 맞춰 늘림 (Stretch) */
-    background-size: 100% 100%; 
-    
-    z-index: 998; /* 맨 뒤 */
-    pointer-events: none;
+    position: fixed; top: 0; left: 0; width: 100vw; 
+    background-image: url('/images/frame02.png'); background-repeat: no-repeat;
+    background-position: center top; background-size: 100% 100%; 
+    z-index: 998; pointer-events: none;
 }
-#frame-02.hidden {
-    display: none;
-}
+#frame-02.hidden { display: none; }
 
-/* 내부 뷰 컨테이너 */
+/* 리스트 뷰 (기본값) */
 #multi-chat-view.layout-list {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    gap: 0px;
-    position: relative;
-    align-items: stretch;
-    z-index: 1; /* 프레임보다 아래 */
+    display: flex; width: 100%; height: 100%; gap: 0px;
+    position: relative; align-items: stretch; z-index: 1;
 }
+#multi-chat-view.layout-list .chat-column { height: auto; flex: 1; }
 
-#multi-chat-view.layout-list .chat-column {
-    height: auto;
-    flex: 1;
-}
-
-/* 그리드 레이아웃 대응 */
-#multi-chat-view.layout-grid {
-    display: grid; 
-    grid-template-columns: repeat(2, 1fr); 
-    grid-template-rows: repeat(2, 1fr); 
-    width: 100%;
-    height: 100%;
-    gap: 0;
-    position: relative;
-    z-index: 1; /* 프레임보다 아래 */
-}
-
-/* 채팅 컬럼 공통 스타일 */
 .chat-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(64, 68, 75, 0.9);
-    box-shadow: none;
-    border-radius: 0;
-    overflow: hidden;
-    position: relative;
-    min-height: 0; 
-    transition: background-color 0.5s ease;
-    border-right: 8px solid #8B5A2B; 
+    flex: 1; display: flex; flex-direction: column; background-color: rgba(64, 68, 75, 0.9);
+    box-shadow: none; border-radius: 0; overflow: hidden; position: relative;
+    min-height: 0; transition: background-color 0.5s ease; border-right: 8px solid #8B5A2B; 
 }
-
 #multi-chat-view.layout-list .chat-column:last-child { border-right: none; }
-#multi-chat-view.layout-grid .chat-column:nth-child(2n) { border-right: none; }
-#multi-chat-view.layout-grid .chat-column:nth-child(1),
-#multi-chat-view.layout-grid .chat-column:nth-child(2) { border-bottom: 4px solid #8B5A2B; }
 
 .chat-column.revealed-danchu { background-color: #fdebf0; }
 .chat-column.revealed-collet { background-color: #f8f2ff; }
@@ -181,19 +68,13 @@ body.in-chat::after {
 }
 .column-resize-handle:hover { background: rgba(255, 255, 255, 0.3); }
 
-/* [수정] 컬럼 헤더 높이 조정 */
 .chat-column-header {
-    padding: 0 0.3rem 8px 1rem;
-    color: white;
-    display: flex;
-    align-items: flex-end; 
-    justify-content: space-between; 
-    border-bottom: none;
-    font-weight: 700;
-    flex-shrink: 0;
-    cursor: grab;
-    height: 5.0vw; 
-    min-height: 60px; 
+    padding: 0 0.3rem 8px 1rem; color: white; display: flex;
+    align-items: flex-end; justify-content: space-between; 
+    border-bottom: none; font-weight: 700; flex-shrink: 0;
+    cursor: grab; height: 5.0vw; min-height: 60px; 
+    /* 헤더 배경 자체는 프레임 아래로 유지하고 싶다면 z-index 조정 안 함 */
+    /* 만약 배경도 위로 올리려면 z-index: 1001; 추가 */
 }
 .chat-column-header:active { cursor: grabbing; }
 
@@ -202,18 +83,27 @@ body.in-chat::after {
 .chat-column-header.streamer-hangyeol { background-color: var(--hangyeol-color); }
 .chat-column-header.streamer-yangdoki { background-color: var(--yangdoki-color); color: #333; }
 
-.column-title { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+/* [수정] 프로필 이미지 영역: 프레임(1000)보다 위로 */
+.column-title { 
+    display: flex; align-items: center; gap: 0.75rem; cursor: pointer; 
+    position: relative; z-index: 1500; 
+}
 .column-title span { display: none; }
 .column-title img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 .chat-column-header.streamer-yangdoki .column-title img { border-color: #333; }
 
-.header-controls-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; background-color: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 8px; margin-right: 15x; margin-bottom: 2px; }
+/* [수정] 기능 버튼 영역: 프레임(1000)보다 위로 */
+.header-controls-right { 
+    display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; background-color: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 8px; margin-right: 15x; margin-bottom: 2px; 
+    position: relative; z-index: 1500;
+}
 .column-settings-btn { background: none; border: none; color: white; font-size: 0.8rem; padding: 0.2rem; line-height: 1; cursor: pointer; transition: all 0.2s; }
 .column-settings-btn:hover { transform: scale(1.1); opacity: 0.8; }
 .chat-column-header.streamer-yangdoki .column-settings-btn { color: #333; }
 .chat-column-header.streamer-yangdoki .volume-btn { color: #333; }
 .volume-btn { font-size: 0.8rem; }
 
+/* 채팅 입력창 및 버튼 */
 .chat-form { background: #ffffff; padding: 0.5rem; display: flex; box-sizing: border-box; border-top: 1px solid #e0e0e0; gap: 0.5rem; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
 .input-wrapper { display: flex; flex-grow: 1; min-width: 150px; gap: 0.5rem; }
 .end-round-btn { padding: 0.4rem 0.8rem; border: none; border-radius: 2rem; background-color: #28a745; color: white; font-weight: 700; cursor: pointer; transition: background-color 0.2s, filter 0.2s; white-space: nowrap; font-size: 0.9rem; }
@@ -224,10 +114,359 @@ body.in-chat::after {
 .input-wrapper button[type="submit"] { border: none; border-radius: 50%; width: 32px; height: 32px; color: #fff; cursor: pointer; font-weight: 700; transition: background-color 0.2s, filter 0.2s; background: var(--primary-color); flex-shrink: 0; font-size: 0.8rem; }
 .input-wrapper button[type="submit"]:hover { filter: brightness(1.1); }
 
-.chat-column[data-streamer-id="danchu"] .end-round-btn, .chat-column[data-streamer-id="danchu"] .input-wrapper button[type="submit"] { background-color: var(--danchu-color); }
-.chat-column[data-streamer-id="collet"] .end-round-btn, .chat-column[data-streamer-id="collet"] .input-wrapper button[type="submit"] { background-color: var(--collet-color); }
-.chat-column[data-streamer-id="hangyeol"] .end-round-btn, .chat-column[data-streamer-id="hangyeol"] .input-wrapper button[type="submit"] { background-color: var(--hangyeol-color); }
-.chat-column[data-streamer-id="yangdoki"] .end-round-btn, .chat-column[data-streamer-id="yangdoki"] .input-wrapper button[type="submit"] { background-color: var(--yangdoki-color); color: #333; }
+/* 스트리머별 채팅창 버튼 색상 */
+.chat-column[data-streamer-id="danchu"] .end-round-btn, 
+.chat-column[data-streamer-id="danchu"] .input-wrapper button[type="submit"] { 
+    background-color: var(--danchu-color) !important; 
+}
+.chat-column[data-streamer-id="collet"] .end-round-btn, 
+.chat-column[data-streamer-id="collet"] .input-wrapper button[type="submit"] { 
+    background-color: var(--collet-color) !important; 
+}
+.chat-column[data-streamer-id="hangyeol"] .end-round-btn, 
+.chat-column[data-streamer-id="hangyeol"] .input-wrapper button[type="submit"] { 
+    background-color: var(--hangyeol-color) !important; 
+}
+.chat-column[data-streamer-id="yangdoki"] .end-round-btn, 
+.chat-column[data-streamer-id="yangdoki"] .input-wrapper button[type="submit"] { 
+    background-color: var(--yangdoki-color) !important; 
+    color: #333 !important; 
+}
 
 .guess-tag.guess-tag-superfan { background-color: #ffd700; color: #333; border-color: #DAA520; }
 .guess-tag.guess-tag-yasik { background-color: var(--danger-color); color: white; border-color: #c9302c; }
+
+
+/* --- 추리 모달 스타일 --- */
+.private-guess-content {
+    position: relative;
+    background-color: #36393f;
+    color: #dcddde;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 1200px;
+    display: flex;
+    height: 80vh;
+    overflow: hidden; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.private-guess-left {
+    width: 25%;
+    padding: 1.5rem;
+    border-right: 1px solid #2f3136;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #2f3136;
+}
+
+.private-guess-right {
+    width: 75%;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #36393f;
+}
+
+.modal-right-content-wrapper {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    gap: 1rem;
+    min-height: 0; 
+}
+
+#private-chat-log {
+    flex: 3;
+    background-color: #202225; 
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-y: auto;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid #2f3136;
+}
+
+#other-fans-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+}
+
+#other-fans-container h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #b9bbbe;
+}
+
+#other-fans-list {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #202225;
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1px solid #2f3136;
+}
+
+.target-pfp {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.target-name {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.guess-option-group { margin-bottom: 1.5rem; }
+.guess-option-group h4 { margin-bottom: 0.5rem; color: #b9bbbe; border-bottom: 1px solid #4f545c; padding-bottom: 0.3rem; }
+
+.tier-btn {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background-color: #40444b;
+    border: 1px solid #202225;
+    color: #dcddde;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    position: relative;
+    font-weight: 500;
+}
+.tier-btn:hover { background-color: #4f545c; }
+.tier-btn.selected {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-hover);
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(243, 115, 33, 0.4);
+}
+.tier-btn.selected::after {
+    content: '✔';
+    position: absolute;
+    right: 1rem;
+    font-weight: bold;
+}
+
+
+/* --- 게임 종료 모달 스타일 --- */
+.game-over-content {
+    background-color: #36393f;
+    color: #dcddde;
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 1200px; 
+    max-height: 90vh;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+.game-over-header {
+    margin-bottom: 1.5rem;
+}
+.game-over-header h1 {
+    font-size: 2.5rem;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin: 0;
+}
+
+#game-over-body {
+    display: grid;
+    grid-template-columns: 1fr 2fr; 
+    gap: 1.5rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    grid-auto-rows: min-content; 
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #40444b;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 1px solid #202225;
+}
+.ranking-pfp {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #5c5f66;
+    flex-shrink: 0;
+}
+.ranking-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+.ranking-text-group .rank-and-name {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+.ranking-item .rank {
+    font-weight: 900;
+    font-size: 2rem;
+    line-height: 1;
+}
+.ranking-item .rank-1 { color: #ffd700; }
+.ranking-item .rank-2 { color: #c0c0c0; }
+.ranking-item .rank-3 { color: #cd7f32; }
+.ranking-item .name { font-weight: 700; font-size: 1.4rem; }
+.ranking-item .round-info { font-size: 0.9rem; color: #b9bbbe; margin-top: 0.25rem; }
+
+/* --- 참가자 목록 모달 (Box 형태) --- */
+#channel-participants-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background-color: #2f3136;
+    border-radius: 5px;
+}
+.participant-card {
+    background-color: #40444b;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #202225;
+    transition: transform 0.2s;
+}
+.participant-card:hover {
+    transform: translateY(-3px);
+    background-color: #4f545c;
+}
+.participant-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+.participant-card.is-streamer img {
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 8px rgba(255,215,0,0.5);
+}
+.participant-card.guessed::after {
+    content: '✔';
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    color: #28a745;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 3px black;
+}
+
+.participant-role, .revealed-identity-tag {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+/* --- 게임 종료 화면 팬 목록 컨테이너 --- */
+.fandom-identity-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+    background-color: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 8px;
+}
+.identity-card {
+    background-color: #202225;
+    border-radius: 5px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #4f545c;
+}
+.identity-card img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-bottom: 0.3rem;
+}
+.identity-card .name {
+    font-size: 0.8rem;
+    color: white;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+.identity-card .role {
+    font-size: 0.7rem;
+    color: #aaa;
+    margin: 0;
+}
+.identity-card .role.yasik { color: var(--danger-color); font-weight: bold; }
+.identity-card .role.superfan { color: #ffd700; font-weight: bold; }
+
+/* 확인 모달 버튼 스타일 */
+.modal-btn-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+.confirm-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.confirm-btn:hover { background-color: #218838; }
+.cancel-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #747f8d;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.cancel-btn:hover { background-color: #5c6470; }

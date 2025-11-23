@@ -13,6 +13,7 @@ let allUsers = [];
 let currentGuesses = {};
 let currentRoundNumber = 1;
 let isGameOver = false;
+// layout 변수는 더이상 필요 없으나 호환성을 위해 'list'로 고정
 let currentLayout = 'list';
 
 // 사운드 및 TTS 관련
@@ -30,7 +31,6 @@ const roomCodeInput = document.getElementById('room-code-input');
 const joinRoomBtn = document.getElementById('join-room-btn');
 const profileSetup = document.getElementById('profile-setup');
 const confirmProfileBtn = document.getElementById('confirm-profile-btn');
-// const profileSetupTitle = document.getElementById('profile-setup-title'); 
 const roleRadios = document.querySelectorAll('input[name="role"]');
 const streamerOptions = document.getElementById('streamer-options');
 const streamerKeyGroup = document.getElementById('streamer-key-group');
@@ -63,62 +63,44 @@ const gameOverBody = document.getElementById('game-over-body');
 const gameOverCloseBtn = document.getElementById('game-over-close-btn');
 const frame02 = document.getElementById('frame-02');
 
+// 확인 모달 요소
+const confirmationModal = document.getElementById('confirmation-modal');
+const confirmEndRoundBtn = document.getElementById('confirm-end-round');
+const cancelEndRoundBtn = document.getElementById('cancel-end-round');
+
 // 기타 전역 변수
 let sortable = null;
 let resizingColumn = null;
 
-// [신규] frame01 이미지 비율 계산을 위한 변수
+// frame01 이미지 비율 계산을 위한 변수
 const frame01Img = new Image();
 frame01Img.src = '/images/frame01.png';
 let frame01Ratio = 0;
 
-// [신규] 이미지가 로드되면 비율 계산 및 레이아웃 적용
 frame01Img.onload = () => {
     if (frame01Img.naturalWidth > 0) {
         frame01Ratio = frame01Img.naturalHeight / frame01Img.naturalWidth;
-        adjustLayout(); // 초기 로드 시 적용
+        adjustLayout();
     }
 };
 
-// [신규] 화면 크기에 따라 하단 패딩과 frame02 높이 조절
+// 화면 크기에 따라 하단 패딩과 frame02 높이 조절
 function adjustLayout() {
-    // 1. 하단 패딩 계산 (frame01 높이만큼)
     if (frame01Ratio > 0) {
         const w = window.innerWidth;
-        // background-size: 100% auto 이므로 높이는 너비 * 비율
         const h = w * frame01Ratio - 15;
-        // CSS 변수에 적용
         document.documentElement.style.setProperty('--frame-bottom-padding', `${h}px`);
     }
-    
-    // 2. frame02 높이 동기화
     updateFrame02Height();
 }
 
-// 화면 레이아웃을 적용하는 함수
-function applyLayout(layout) {
-    currentLayout = layout; 
-    if (layout === 'grid') {
-        multiChatView.classList.remove('layout-list');
-        multiChatView.classList.add('layout-grid');
-    } else {
-        multiChatView.classList.remove('layout-grid');
-        multiChatView.classList.add('layout-list');
-    }
+// [수정] 그리드 전환 함수 삭제 및 기본 동작만 남김
+// function applyLayout(layout) { ... } // 삭제됨
 
-    document.querySelectorAll('.menu-change-layout-btn').forEach(btn => {
-        btn.textContent = layout === 'grid' ? '리스트형 보기' : '그리드형 보기';
-    });
-}
-
-// 방장 전용 UI를 업데이트하는 함수
 function updateOwnerSpecificUI() {
     const isOwner = socket.id === currentOwnerId;
-    document.querySelectorAll('.menu-change-layout-btn').forEach(btn => {
-        btn.style.display = isOwner ? 'block' : 'none';
-    });
+    // 레이아웃 변경 버튼 관련 로직 삭제됨
 }
-
 
 /**
  * TTS 및 사운드 관련 함수들...
@@ -161,8 +143,229 @@ function showToast(message) {
 }
 
 /**
- * UI 업데이트 관련 함수들...
+ * 시스템 메시지 및 게임 메시지 추가 함수
  */
+function addSystemMessage(user, text, targetStreamerId = null) {
+    let targetUls = [];
+    
+    if (targetStreamerId) {
+        const ul = document.getElementById(`messages-${targetStreamerId}`);
+        if (ul) targetUls.push(ul);
+    } else {
+        targetUls = document.querySelectorAll('.messages');
+    }
+
+    targetUls.forEach(ul => {
+        const li = document.createElement('li');
+        li.className = 'system-message';
+        let pfpSrc = '/images/ghost.png';
+        let nickname = 'System';
+        let nicknameClass = 'system-nickname';
+        
+        if (user) {
+            pfpSrc = getPfp(user);
+            nickname = user.nickname;
+            if (user.role === 'streamer') {
+                nicknameClass += ` streamer-${user.streamerId}`;
+            } else {
+                nicknameClass += ` fan-group-${user.fanGroup}`;
+            }
+        }
+        
+        li.innerHTML = `
+            <img src="${pfpSrc}" class="system-pfp">
+            <span class="${nicknameClass}">${nickname}</span>
+            <span class="system-text">${text}</span>
+        `;
+        ul.appendChild(li);
+        ul.scrollTop = ul.scrollHeight;
+    });
+}
+
+function addGameMessage(message, type, chatGroupId = null) {
+    const createMsg = () => {
+        const li = document.createElement('li');
+        li.className = `game-message game-message-${type}`;
+        li.innerHTML = message;
+        return li;
+    };
+    
+    if (chatGroupId) {
+        const targetUl = document.getElementById(`messages-${chatGroupId}`);
+        if (targetUl) {
+            targetUl.appendChild(createMsg());
+            targetUl.scrollTop = targetUl.scrollHeight;
+        }
+    } else {
+        document.querySelectorAll('.messages').forEach(ul => {
+            ul.appendChild(createMsg());
+            ul.scrollTop = ul.scrollHeight;
+        });
+    }
+}
+
+function getStreamerIdByFanGroup(fanGroupId) {
+    if (!gameConfig) return null;
+    const streamer = gameConfig.streamers.find(s => s.fandom.id === fanGroupId);
+    return streamer ? streamer.id : null;
+}
+
+
+/**
+ * 모달 열기 함수
+ */
+
+function openChannelParticipantsModal(streamerId) {
+    const streamerConfig = gameConfig.streamers.find(s => s.id === streamerId);
+    if (!streamerConfig) return;
+
+    channelParticipantsTitle.textContent = `${streamerConfig.name} 채널 참가자`;
+    channelParticipantsTitle.dataset.streamerId = streamerId; 
+    channelParticipantsList.innerHTML = '';
+
+    const participants = allUsers.filter(u => 
+        (u.role === 'streamer' && u.streamerId === streamerId) ||
+        (u.role === 'fan' && u.fanGroup === streamerConfig.fandom.id)
+    );
+
+    participants.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'participant-card';
+        if (user.role === 'streamer') item.classList.add('is-streamer');
+        
+        if (user.role === 'fan' && currentUserData.role === 'streamer' && currentUserData.streamerId === streamerId) {
+            const guessData = currentGuesses[user.id] && currentGuesses[user.id][streamerId];
+            if (guessData) {
+                item.classList.add('guessed');
+            }
+            item.style.cursor = 'pointer';
+            item.onclick = (e) => {
+                if(e.target.classList.contains('kick-btn')) return;
+                openPrivateGuessModal(user, streamerId);
+            };
+        }
+
+        let extraInfo = '';
+        if (socket.id === currentOwnerId && user.id !== socket.id && user.role !== 'streamer') {
+             extraInfo = `<button class="kick-btn" style="margin-top:auto; width:100%; font-size:0.8rem; padding:0.3rem;" onclick="socket.emit('kick player', '${user.id}')">강퇴</button>`;
+        } else if (user.role === 'fan' && currentUserData.role === 'streamer' && currentUserData.streamerId === streamerId) {
+             const guessData = currentGuesses[user.id] && currentGuesses[user.id][streamerId];
+             const statusText = guessData ? guessData.guessedTierName : '미판단';
+             extraInfo = `<div class="participant-role" style="background-color: ${guessData ? '#ffd700' : '#555'}; color: ${guessData ? '#333' : '#ccc'};">${statusText}</div>`;
+        } else {
+             const roleLabel = user.role === 'streamer' ? '스트리머' : '팬';
+             extraInfo = `<div class="participant-role" style="background-color: #555;">${roleLabel}</div>`;
+        }
+
+        item.innerHTML = `
+            <img src="${getPfp(user)}">
+            <div style="font-weight:bold; color:white; margin-bottom:0.5rem; font-size:0.9rem;">${user.nickname}</div>
+            ${extraInfo}
+        `;
+        channelParticipantsList.appendChild(item);
+    });
+
+    channelParticipantsModal.classList.remove('hidden');
+}
+
+function openPrivateGuessModal(targetUser, streamerId) {
+    if (!targetUser) return;
+    privateGuessTargetUser = targetUser;
+    
+    const streamerConfig = gameConfig.streamers.find(s => s.id === streamerId);
+    if (!streamerConfig) return;
+
+    privateGuessTargetInfo.dataset.streamerId = streamerId;
+    
+    privateGuessTargetInfo.innerHTML = `
+        <img src="${getPfp(targetUser)}" class="target-pfp">
+        <div class="target-name">${targetUser.nickname}</div>
+    `;
+
+    privateGuessOptionsContainer.innerHTML = '';
+    if (currentUserData.role === 'streamer' && currentUserData.streamerId === streamerId) {
+        const guessData = currentGuesses[targetUser.id] && currentGuesses[targetUser.id][streamerId];
+        const currentGuessTier = guessData ? guessData.guessedTierName : null;
+
+        const tiers = streamerConfig.fandom.tiers;
+        tiers.forEach(tier => {
+            const btn = document.createElement('button');
+            btn.className = 'tier-btn';
+            if (currentGuessTier === tier.name) btn.classList.add('selected');
+            
+            let roleLabel = "팬";
+            if (tier.isSuperFan) roleLabel = "열혈팬";
+            if (tier.isYasik) roleLabel = "유동팬"; 
+            
+            btn.textContent = `${tier.name} (${roleLabel})`;
+            btn.onclick = () => {
+                let guessedRole = 'fan';
+                if (tier.isSuperFan) guessedRole = 'superfan';
+                if (tier.isYasik) guessedRole = 'yasik';
+                
+                socket.emit('guess role', {
+                    targetUser: targetUser,
+                    guessedRole: guessedRole,
+                    guessedTierName: tier.name
+                });
+                document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+            };
+            privateGuessOptionsContainer.appendChild(btn);
+        });
+        
+        privateGuessAdminControls.classList.remove('hidden');
+        privateKickBtn.onclick = () => {
+            if (confirm('정말로 이 플레이어를 강퇴하시겠습니까?')) {
+                socket.emit('kick player', targetUser.id);
+                privateGuessModal.classList.add('hidden');
+            }
+        };
+    } else {
+        privateGuessAdminControls.classList.add('hidden');
+        privateGuessOptionsContainer.innerHTML = '<p style="text-align:center; color:#999;">추리 권한이 없습니다.</p>';
+    }
+
+    privateChatLog.innerHTML = '';
+    const channelMessages = document.getElementById(`messages-${streamerId}`);
+    if (channelMessages) {
+        const clonedMessages = channelMessages.cloneNode(true);
+        Array.from(clonedMessages.children).forEach(li => {
+             const uid = li.dataset.userId;
+             if (uid === targetUser.id || (currentUserData.role === 'streamer' && uid === currentUserData.id)) {
+                 const newItem = li.cloneNode(true);
+                 privateChatLog.appendChild(newItem);
+             }
+        });
+        setTimeout(() => privateChatLog.scrollTop = privateChatLog.scrollHeight, 0);
+    }
+
+    otherFansListContainer.innerHTML = '';
+    const sameChannelFans = allUsers.filter(u => u.role === 'fan' && u.fanGroup === streamerConfig.fandom.id && u.id !== targetUser.id);
+    
+    if (sameChannelFans.length === 0) {
+        otherFansListContainer.innerHTML = '<p style="color:#777; font-size:0.8rem; text-align:center;">다른 팬이 없습니다.</p>';
+    }
+    
+    sameChannelFans.forEach(fan => {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.padding = '0.5rem';
+        div.style.backgroundColor = '#40444b';
+        div.style.borderRadius = '5px';
+        div.style.marginBottom = '0.5rem';
+        div.style.cursor = 'pointer';
+        
+        div.innerHTML = `<img src="${getPfp(fan)}" style="width:30px;height:30px;border-radius:50%;margin-right:0.5rem;object-fit:cover;"> <span style="font-size:0.9rem;color:white;">${fan.nickname}</span>`;
+        div.onclick = () => openPrivateGuessModal(fan, streamerId); 
+        otherFansListContainer.appendChild(div);
+    });
+
+    privateGuessModal.classList.remove('hidden');
+}
+
+// UI 업데이트 및 기타 함수들...
 function updateRoundEndButtons() {
     document.querySelectorAll('.end-round-btn').forEach(btn => {
         btn.textContent = `${currentRoundNumber}라운드 종료`;
@@ -176,7 +379,7 @@ function updateEndRoundButtonsAfterGameOver() {
     });
 }
 function updateColumnUIVisibility() {
-    if (!gameConfig) return; // config 체크 추가
+    if (!gameConfig) return; 
     const streamerIdToFandomId = new Map(gameConfig.streamers.map(s => [s.id, s.fandom.id]));
     document.querySelectorAll('.chat-column').forEach(column => {
         const columnStreamerId = column.dataset.streamerId;
@@ -289,14 +492,6 @@ function setupSettingsMenus() {
             hideAllSettingsMenus(); if (isHidden) menu.classList.remove('hidden');
         });
     });
-    // 레이아웃 변경 버튼 이벤트 리스너
-    document.querySelectorAll('.menu-change-layout-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const newLayout = currentLayout === 'grid' ? 'list' : 'grid';
-            socket.emit('change layout', newLayout);
-            hideAllSettingsMenus();
-        });
-    });
     document.querySelectorAll('.menu-copy-code-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (currentRoomId) navigator.clipboard.writeText(currentRoomId).then(() => showToast('코드 복사 완료!'));
@@ -312,13 +507,10 @@ function setupSettingsMenus() {
     document.addEventListener('click', hideAllSettingsMenus);
 }
 
-// frame02 높이를 채팅창 하단에 맞춰 업데이트하는 함수
 function updateFrame02Height() {
     const container = document.getElementById('chat-container');
     if (container && frame02) {
         const rect = container.getBoundingClientRect();
-        // frame02는 top:0에서 시작하므로, 높이를 컨테이너의 bottom 좌표로 설정하면
-        // 화면 맨 위부터 컨테이너 바닥까지 덮게 됩니다.
         frame02.style.height = `${rect.bottom}px`;
     }
 }
@@ -327,7 +519,6 @@ function showChatRoom() {
     mainMenu.classList.add('hidden'); profileSetup.classList.add('hidden');
     chatContainer.classList.remove('hidden'); document.body.classList.add('in-chat');
     
-    // frame02 표시
     if (frame02) frame02.classList.remove('hidden');
     
     chatContainer.className = 'multi-view-active';
@@ -337,7 +528,6 @@ function showChatRoom() {
     sortable = Sortable.create(multiChatView, { animation: 150, handle: '.chat-column-header', filter: '.volume-control-container, .settings-container' });
     initializeResizeHandles(); setupSettingsMenus();
     
-    // 초기 레이아웃 계산 (높이 및 패딩)
     adjustLayout();
 
     if (currentUserData.role !== 'streamer') return;
@@ -364,7 +554,6 @@ function showChatRoom() {
 
 //--- 이벤트 리스너 설정 ---//
 
-// [수정] '새로운 팬채팅 만들기' 클릭 시
 createRoomBtn.addEventListener('click', () => { 
     userIntent = 'create'; 
     mainMenu.classList.add('hidden'); 
@@ -375,7 +564,6 @@ createRoomBtn.addEventListener('click', () => {
     updateProfileSetupUI(); 
 });
 
-// [수정] '코드로 참여하기' 클릭 시
 joinRoomBtn.addEventListener('click', () => {
     const code = roomCodeInput.value.trim().toUpperCase(); 
     if (!code) return alert('초대 코드를 입력해주세요.');
@@ -389,7 +577,6 @@ joinRoomBtn.addEventListener('click', () => {
     updateProfileSetupUI();
 });
 
-// [수정] 뒤로가기 버튼
 backToLobbyBtn.addEventListener('click', () => { 
     profileSetup.classList.add('hidden'); 
     mainMenu.classList.remove('hidden'); 
@@ -426,9 +613,21 @@ confirmProfileBtn.addEventListener('click', () => {
 });
 
 
+// 모달 외부 클릭 시 닫기
+const modals = [privateGuessModal, channelParticipantsModal, gameOverModal, confirmationModal];
+modals.forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+            if (modal === privateGuessModal) privateGuessTargetUser = null;
+        }
+    });
+});
+
 privateGuessModalClose.onclick = () => { privateGuessModal.classList.add('hidden'); privateGuessTargetUser = null; };
 channelParticipantsModalClose.onclick = () => channelParticipantsModal.classList.add('hidden');
 gameOverCloseBtn.onclick = () => gameOverModal.classList.add('hidden');
+
 document.querySelectorAll('.chat-form').forEach(form => {
     form.addEventListener('submit', (e) => {
         e.preventDefault(); const input = form.querySelector('input[type="text"]');
@@ -438,22 +637,37 @@ document.querySelectorAll('.chat-form').forEach(form => {
         }
     });
 });
+
+// 라운드 종료 버튼 클릭 시 확인 모달 표시
 document.querySelectorAll('.end-round-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        if (isGameOver) gameOverModal.classList.remove('hidden');
-        else if (confirm('정말로 라운드를 종료하고 결과를 확인하시겠습니까?')) {
-            btn.disabled = true; socket.emit('end round');
+        if (isGameOver) {
+            gameOverModal.classList.remove('hidden');
+        } else {
+            confirmationModal.classList.remove('hidden');
         }
     });
 });
+
+// 확인 모달 버튼 이벤트
+confirmEndRoundBtn.addEventListener('click', () => {
+    socket.emit('end round');
+    confirmationModal.classList.add('hidden');
+    document.querySelectorAll('.end-round-btn').forEach(b => b.disabled = true);
+});
+
+cancelEndRoundBtn.addEventListener('click', () => {
+    confirmationModal.classList.add('hidden');
+});
+
+
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        [privateGuessModal, channelParticipantsModal, gameOverModal].forEach(modal => modal.classList.add('hidden'));
+        modals.forEach(modal => modal.classList.add('hidden'));
         document.querySelectorAll('.settings-menu').forEach(menu => menu.classList.add('hidden'));
     }
 });
 
-// [수정] 마우스 이동 이벤트 (리사이징 처리)
 document.addEventListener('mousemove', (e) => {
     if (!resizingColumn) return;
     
@@ -462,8 +676,6 @@ document.addEventListener('mousemove', (e) => {
         const rect = container.getBoundingClientRect();
         const newHeight = e.clientY - rect.top;
         container.style.height = `${Math.max(300, newHeight)}px`;
-        
-        // 채팅창 크기 변경 시 frame02 높이도 동기화
         updateFrame02Height();
     }
 });
@@ -472,7 +684,6 @@ document.addEventListener('mouseup', () => {
     if (resizingColumn) { resizingColumn = null; document.body.style.userSelect = ''; document.body.style.cursor = ''; }
 });
 
-// [수정] 창 크기 변경 시 레이아웃 재계산 (패딩 및 높이)
 window.addEventListener('resize', () => {
     if (currentRoomId) {
         adjustLayout();
@@ -495,10 +706,36 @@ function onRoomJoined(data) {
 }
 socket.on('room created', onRoomJoined);
 socket.on('join success', onRoomJoined);
-socket.on('layout changed', ({ layout }) => { applyLayout(layout); }); 
+// layout changed 이벤트는 무시하거나 기본 동작만 수행
+socket.on('layout changed', ({ layout }) => { /* 기능 삭제됨 */ }); 
 socket.on('round advanced', (newRound) => { currentRoundNumber = newRound; updateRoundEndButtons(); });
-socket.on('user joined', (data) => { playSound('join.MP3'); allUsers = data.users; updateUserList(data.users); addSystemMessage(data.user, '님이 입장했습니다.'); });
-socket.on('user left', (data) => { playSound('leave.MP3'); allUsers = data.users; updateUserList(data.users); const message = data.reason ? `님이 ${data.reason} 처리되었습니다.` : '님이 퇴장했습니다.'; addSystemMessage(data.user, message); });
+socket.on('user joined', (data) => { 
+    playSound('join.MP3'); 
+    allUsers = data.users; 
+    updateUserList(data.users); 
+    
+    let targetStreamerId = null;
+    if (data.user.role === 'streamer') {
+        targetStreamerId = data.user.streamerId;
+    } else {
+        targetStreamerId = getStreamerIdByFanGroup(data.user.fanGroup);
+    }
+    addSystemMessage(data.user, '님이 입장했습니다.', targetStreamerId); 
+});
+socket.on('user left', (data) => { 
+    playSound('leave.MP3'); 
+    allUsers = data.users; 
+    updateUserList(data.users); 
+    const message = data.reason ? `님이 ${data.reason} 처리되었습니다.` : '님이 퇴장했습니다.'; 
+    
+    let targetStreamerId = null;
+    if (data.user.role === 'streamer') {
+        targetStreamerId = data.user.streamerId;
+    } else {
+        targetStreamerId = getStreamerIdByFanGroup(data.user.fanGroup);
+    }
+    addSystemMessage(data.user, message, targetStreamerId); 
+});
 socket.on('new host', (data) => {
     currentOwnerId = data.newOwner.id; allUsers = data.users; updateUserList(data.users);
     updateColumnUIVisibility(); updateOwnerSpecificUI(); 
@@ -514,6 +751,11 @@ socket.on('error message', (message) => {
     alert(message); currentMode = 'fakefan'; userIntent = null; roomToJoin = null;
     mainMenu.classList.remove('hidden'); profileSetup.classList.add('hidden');
     chatContainer.classList.add('hidden'); document.body.classList.remove('in-chat');
+});
+socket.on('game message', (data) => {
+    addGameMessage(data.message, data.type, data.chatGroupId);
+    if (data.type === 'success') playSound('success.MP3');
+    else if (data.type === 'reveal') playSound('reveal.MP3');
 });
 
 /**
@@ -643,22 +885,50 @@ socket.on('game over', (results) => {
     playSound('special.MP3'); isGameOver = true; updateEndRoundButtonsAfterGameOver();
     allUsers = results.allUsers.map(u => ({ ...u, isRevealed: true, actualRole: u.actualRole || getRole(u) }));
     revealAllFans(); gameOverBody.innerHTML = ''; gameOverBody.className = '';
+    
     results.rankings.forEach(rankedStreamer => {
-        const rankerDiv = document.createElement('div'); rankerDiv.className = 'ranking-item';
+        const rankerDiv = document.createElement('div'); 
+        rankerDiv.className = 'ranking-item';
         const streamerInfo = allUsers.find(u => u.streamerId === rankedStreamer.id);
-        rankerDiv.innerHTML = `<img src="${streamerInfo.pfp}" alt="${rankedStreamer.name}" class="ranking-pfp"><div class="ranking-text-group"><div class="rank-and-name"><span class="rank rank-${rankedStreamer.rank}">${rankedStreamer.rank}</span> <span class="name">${rankedStreamer.name}</span></div><span class="round-info">(${rankedStreamer.finishedInRound}라운드 완료)</span></div>`;
-        const groupDiv = document.createElement('div'); groupDiv.className = 'fandom-identity-group';
+        
+        const rankClass = `rank-${rankedStreamer.rank <= 3 ? rankedStreamer.rank : 'other'}`;
+        
+        rankerDiv.innerHTML = `
+            <span class="rank ${rankClass}">${rankedStreamer.rank}</span>
+            <img src="${streamerInfo.pfp}" alt="${rankedStreamer.name}" class="ranking-pfp">
+            <div class="ranking-text-group">
+                <div class="name">${rankedStreamer.name}</div>
+                <div class="round-info">${rankedStreamer.finishedInRound}라운드 완료</div>
+            </div>
+        `;
+        gameOverBody.appendChild(rankerDiv);
+        
+        const groupDiv = document.createElement('div'); 
+        groupDiv.className = 'fandom-identity-group';
         const streamerConfig = gameConfig.streamers.find(s => s.id === rankedStreamer.id);
         const fansOfStreamer = allUsers.filter(u => u.role === 'fan' && u.fanGroup === streamerConfig.fandom.id);
+        
         fansOfStreamer.forEach(user => {
-            const card = document.createElement('div'); card.className = `identity-card fandom-${user.fanGroup}`;
+            const card = document.createElement('div'); 
+            card.className = `identity-card`;
+            
             const tier = streamerConfig.fandom.tiers.find(t => t.name === user.fanTier);
             const roleText = tier ? tier.name : "팬";
-            card.innerHTML = `<img src="${getPfp(user)}" alt="${user.nickname}"><p class="name">${user.nickname}</p><p class="role ${user.actualRole || ''}">${roleText}</p>`;
+            
+            let roleClass = '';
+            if (user.actualRole === 'yasik') roleClass = 'yasik';
+            else if (user.actualRole === 'superfan') roleClass = 'superfan';
+            
+            card.innerHTML = `
+                <img src="${getPfp(user)}" alt="${user.nickname}">
+                <p class="name">${user.nickname}</p>
+                <p class="role ${roleClass}">${roleText}</p>
+            `;
             groupDiv.appendChild(card);
         });
-        gameOverBody.appendChild(rankerDiv); gameOverBody.appendChild(groupDiv);
+        gameOverBody.appendChild(groupDiv);
     });
+    
     gameOverModal.classList.remove('hidden');
 });
 function updateUserList(users) {
